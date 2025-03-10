@@ -14,12 +14,12 @@ jobs:
       - name: Repository auschecken
         uses: actions/checkout@v3
 
-      - name: Fetch UGC Data mit Client-Version
+      - name: Fetch UGC Data mit Redirect-Fix
         run: |
           VERSION=$(curl -s "https://play.pixels.xyz/version.json" | tr -d '"')
           echo "📢 Aktuelle Client-Version: $VERSION"
 
-          curl -s -H "x-client-version: $VERSION" \
+          curl -s -L -H "x-client-version: $VERSION" \
                "https://pixels-server.pixels.xyz/v1/game/library?tenant=pixels&ugc=true&ver=$VERSION" -o ugc.json
 
       - name: Prüfen, ob Datei gültig ist
