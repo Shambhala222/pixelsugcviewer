@@ -11,10 +11,10 @@ document.addEventListener("DOMContentLoaded", async function () {
     ugcId = ugcId.startsWith("-") ? ugcId.substring(1) : ugcId;
 
     try {
-        // ✅ UGC.json von GitHub abrufen (automatisch aktualisiert)
+        // ✅ Lade UGC.json aus GitHub Repository (automatisch aktuell)
         const response = await fetch("https://raw.githubusercontent.com/shambhala222/pixelsugcviewer/main/ugc.json");
         if (!response.ok) {
-            throw new Error("Fehler beim Abrufen der UGC-Daten");
+            throw new Error("❌ Fehler beim Abrufen der UGC-Daten");
         }
 
         const ugcData = await response.json();
