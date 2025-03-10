@@ -4,37 +4,38 @@ permissions:
 
 on:
   schedule:
-    - cron: "0 0 * * *"  # Läuft täglich um 00:00 UTC
-  workflow_dispatch:  # Manuelles Starten erlaubt
+    - cron: "0 0 * * *"  # Führt das Skript einmal am Tag um 00:00 Uhr UTC aus
+  workflow_dispatch:  # Erlaubt manuelles Starten
 
 jobs:
   update_json:
     runs-on: ubuntu-latest
     steps:
-      - name: Repository auschecken
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Fetch UGC Data mit Redirect-Fix
+      - name: Fetch Client Version
         run: |
-          VERSION=$(curl -s "https://play.pixels.xyz/version.json" | tr -d '"')
-          echo "📢 Aktuelle Client-Version: $VERSION"
+          CLIENT_VERSION=$(curl -s "https://play.pixels.xyz/version.json" | tr -d '"')
+          echo "Client-Version: $CLIENT_VERSION"
+          echo "CLIENT_VERSION=$CLIENT_VERSION" >> $GITHUB_ENV
 
-          curl -s -L -H "x-client-version: $VERSION" \
-               "https://pixels-server.pixels.xyz/v1/game/library?tenant=pixels&ugc=true&ver=$VERSION" -o ugc.json
+      - name: Fetch UGC Data
+        run: |
+          curl -L "https://pixels-server.pixels.xyz/v1/game/library?tenant=pixels&ugc=true&ver=${{ env.CLIENT_VERSION }}" --compressed -o ugc.json
 
-      - name: Prüfen, ob Datei gültig ist
+      - name: Verify JSON Validity
         run: |
           if ! jq empty ugc.json > /dev/null 2>&1; then
             echo "❌ Fehler: JSON-Datei ist ungültig oder leer!"
-            cat ugc.json  # Zeigt den Inhalt für Debugging
+            cat ugc.json  # Debugging: Zeigt den Inhalt der Datei
             exit 1
           fi
           echo "✅ UGC-Daten erfolgreich geladen!"
 
-      - name: Commit und Push Änderungen
+      - name: Commit and Push Changes
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add ugc.json
-          git commit -m "Auto-Update UGC Data [$(date)]" || echo "ℹ️ Keine Änderungen zum Commit."
-          git push || echo "ℹ️ Kein Push nötig, keine Änderungen."
+          git diff --cached --quiet || (git commit -m "Auto-Update UGC Data" && git push)
