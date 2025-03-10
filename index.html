@@ -19,7 +19,7 @@
         async function loadUGCData(ugcName) {
             try {
                 // Lade die UGC.json von Google Drive
-                const response = await fetch('https://drive.google.com/uc?export=download&id=1RJAaMX2XPxNkBqJMhzLeRoh-48-colRr');
+                const response = await fetch('https://raw.githubusercontent.com/shambhala222/pixelsugcviewer/main/ugc.json');
                 const ugcData = await response.json();
 
                 // Suche die Animation in der JSON-Datei
