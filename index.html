@@ -4,13 +4,80 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pixels UGC Viewer</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+        canvas { border: 1px solid black; margin-top: 10px; }
+        #loading { font-size: 18px; font-weight: bold; color: #555; }
+    </style>
 </head>
 <body>
     <h1>Pixels UGC Viewer</h1>
-    <p>Klicke auf eine Animation, um sie abzuspielen!</p>
-    <div id="game-container"></div>
-    <script src="script.js"></script>
+    <p id="loading">Lade Animation...</p>
+    <canvas id="animationCanvas"></canvas>
+
+    <script>
+        async function loadUGCData(ugcName) {
+            try {
+                // Lade die UGC.json von deinem GitHub
+                const response = await fetch('https://raw.githubusercontent.com/DEIN_GITHUB_USERNAME/pixelsugcviewer/main/UGC.json');
+                const ugcData = await response.json();
+
+                // Suche die Animation in der JSON-Datei
+                const ugcEntry = Object.values(ugcData).flatMap(category => Object.values(category))
+                    .find(item => item.image && item.image.includes(ugcName));
+
+                if (!ugcEntry || !ugcEntry.sprite || !ugcEntry.sprite.isSpritesheet) {
+                    document.getElementById("loading").textContent = "Keine Animation gefunden.";
+                    return;
+                }
+
+                const imageUrl = ugcEntry.image.startsWith("//") ? "https:" + ugcEntry.image : ugcEntry.image;
+                const frames = ugcEntry.sprite.frames || 1;
+                const fps = ugcEntry.sprite.framerate || 5;
+                const width = ugcEntry.sprite.size.width || 64;
+                const height = ugcEntry.sprite.size.height || 64;
+
+                startAnimation(imageUrl, frames, fps, width, height);
+            } catch (error) {
+                document.getElementById("loading").textContent = "Fehler beim Laden der Animation.";
+                console.error("Fehler:", error);
+            }
+        }
+
+        function startAnimation(imageUrl, frames, fps, width, height) {
+            document.getElementById("loading").style.display = "none";
+            const canvas = document.getElementById("animationCanvas");
+            const ctx = canvas.getContext("2d");
+
+            canvas.width = width;
+            canvas.height = height;
+
+            const image = new Image();
+            image.src = imageUrl;
+            let frameIndex = 0;
+            const frameWidth = image.width / frames;
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(image, frameIndex * frameWidth, 0, frameWidth, height, 0, 0, width, height);
+                frameIndex = (frameIndex + 1) % frames;
+                setTimeout(animate, 1000 / fps);
+            }
+
+            image.onload = () => animate();
+        }
+
+        function getUGCNameFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('ugc') || null;
+        }
+
+        const ugcName = getUGCNameFromURL();
+        if (ugcName) {
+            loadUGCData(ugcName);
+        } else {
+            document.getElementById("loading").textContent = "Kein UGC ausgewählt.";
+        }
+    </script>
 </body>
 </html>
