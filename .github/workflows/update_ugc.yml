@@ -17,12 +17,16 @@ jobs:
       - name: Fetch UGC Data mit Client-Version
         run: |
           VERSION=$(curl -s "https://play.pixels.xyz/version.json" | tr -d '"')
-          curl -s "https://pixels-server.pixels.xyz/v1/game/library?tenant=pixels&ugc=true&ver=$VERSION" -o ugc.json
+          echo "📢 Aktuelle Client-Version: $VERSION"
+
+          curl -s -H "x-client-version: $VERSION" \
+               "https://pixels-server.pixels.xyz/v1/game/library?tenant=pixels&ugc=true&ver=$VERSION" -o ugc.json
 
       - name: Prüfen, ob Datei gültig ist
         run: |
           if ! jq empty ugc.json > /dev/null 2>&1; then
             echo "❌ Fehler: JSON-Datei ist ungültig oder leer!"
+            cat ugc.json  # Zeigt den Inhalt für Debugging
             exit 1
           fi
           echo "✅ UGC-Daten erfolgreich geladen!"
@@ -32,5 +36,5 @@ jobs:
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add ugc.json
-          git commit -m "Auto-Update UGC Data [$(date)]" || echo "Keine Änderungen zum Commit."
-          git push || echo "Kein Push nötig, keine Änderungen."
+          git commit -m "Auto-Update UGC Data [$(date)]" || echo "ℹ️ Keine Änderungen zum Commit."
+          git push || echo "ℹ️ Kein Push nötig, keine Änderungen."
