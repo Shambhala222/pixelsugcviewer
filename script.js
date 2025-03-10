@@ -11,33 +11,28 @@ document.addEventListener("DOMContentLoaded", async function () {
     ugcId = ugcId.startsWith("-") ? ugcId.substring(1) : ugcId;
 
     try {
-        // ✅ Lade UGC.json aus GitHub Repository (automatisch aktuell)
-        const response = await fetch("https://raw.githubusercontent.com/shambhala222/pixelsugcviewer/main/ugc.json");
-        if (!response.ok) {
-            throw new Error("❌ Fehler beim Abrufen der UGC-Daten");
-        }
-
+        const response = await fetch("https://raw.githubusercontent.com/Shambhala222/pixelsugcviewer/main/ugc.json");
         const ugcData = await response.json();
 
-        // 🔍 1️⃣ Suche zuerst nach `itm_ugc-`
+        // 1️⃣ Suche mit und ohne Präfix
         const itmKey = `itm_ugc-${ugcId}`;
-        const itmEntry = ugcData[itmKey];
+        const objKey = `obj_ugc-${ugcId}`;
 
+        let itmEntry = ugcData[itmKey] || ugcData[ugcId];
         if (!itmEntry || !itmEntry.onUse || !itmEntry.onUse.placeObject) {
             document.getElementById("ugc-container").innerHTML = "<p>Kein animiertes UGC gefunden.</p>";
             return;
         }
 
-        // 🔍 2️⃣ Finde `obj_ugc-` für die Animation
-        const objKey = itmEntry.onUse.placeObject;
-        const objEntry = ugcData[objKey];
+        // 2️⃣ Suche `obj_ugc-` für die Animation
+        let objEntry = ugcData[objKey] || ugcData[itmEntry.onUse.placeObject];
 
         if (!objEntry || !objEntry.sprite || !objEntry.sprite.isSpritesheet) {
             document.getElementById("ugc-container").innerHTML = "<p>Dieses UGC ist nicht animiert.</p>";
             return;
         }
 
-        // ✅ 3️⃣ Extrahiere die richtige Sprite-URL
+        // 3️⃣ Extrahiere die richtige Sprite-URL
         let spriteUrl = objEntry.sprite.image;
         if (spriteUrl.startsWith("//")) {
             spriteUrl = "https:" + spriteUrl; // Korrektur der URL
@@ -48,7 +43,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         const spriteWidth = objEntry.sprite.size.width;
         const spriteHeight = objEntry.sprite.size.height;
 
-        // ✅ 4️⃣ Erstelle das Canvas für die Animation
+        // 4️⃣ Erstelle das Canvas für die Animation
         const canvas = document.createElement("canvas");
         canvas.width = spriteWidth;
         canvas.height = spriteHeight;
@@ -68,9 +63,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         spriteImage.onload = function () {
             setInterval(animateSprite, 1000 / frameRate);
         };
-
     } catch (error) {
-        console.error("❌ Fehler beim Laden der UGC JSON:", error);
+        console.error("Fehler beim Laden der UGC JSON:", error);
         document.getElementById("ugc-container").innerHTML = "<p>Fehler beim Laden der Daten.</p>";
     }
 });
