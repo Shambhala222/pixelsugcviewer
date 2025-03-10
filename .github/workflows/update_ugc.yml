@@ -1,0 +1,25 @@
+name: Update UGC Data
+
+on:
+  schedule:
+    - cron: "0 0 * * *"  # Führt das Skript einmal am Tag um 00:00 Uhr UTC aus
+  workflow_dispatch:  # Erlaubt manuelles Starten
+
+jobs:
+  update_json:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Fetch UGC Data
+        run: |
+          curl -s "https://pixels-server.pixels.xyz/v1/game/library?tenant=pixels&ugc=true" -o ugc.json
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add ugc.json
+          git commit -m "Auto-Update UGC Data"
+          git push
