@@ -17,9 +17,9 @@ document.addEventListener("DOMContentLoaded", async function () {
         
         console.log("✅ JSON geladen, Gesamtanzahl UGCs:", Object.keys(ugcData).length);
 
-        // 🚨 WICHTIG: UGC-ID darf NICHT verändert werden! Sie bleibt exakt, wie sie ist.
-        const itmKey = `itm_ugc-${ugcId}`;
-        const objKey = `obj_ugc-${ugcId}`;
+        // 🚨 WICHTIG: ITM_UGC & OBJ_UGC BEHALTEN IHR MINUS
+        const itmKey = `itm_ugc-${ugcId}`;  // Feste Struktur: itm_ugc-<ID>
+        const objKey = `obj_ugc-${ugcId}`;  // Feste Struktur: obj_ugc-<ID>
 
         console.log("🔎 Suche nach itm_ugc:", itmKey);
         console.log("🔎 Suche nach obj_ugc:", objKey);
@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         const itmEntry = ugcData[itmKey];
         if (!itmEntry || !itmEntry.onUse || !itmEntry.onUse.placeObject) {
             console.error("❌ itm_ugc nicht gefunden oder keine placeObject-Verknüpfung.");
-            console.log("🔍 Verfügbare itm_ugc Keys:", Object.keys(ugcData).filter(k => k.startsWith("itm_ugc-")));
+            console.log("🔍 Verfügbare itm_ugc Keys:", Object.keys(ugcData).filter(k => k.startsWith("itm_ugc")));
             document.getElementById("ugc-container").innerHTML = "<p>Kein animiertes UGC gefunden.</p>";
             return;
         }
@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         const objEntry = ugcData[objKey];
         if (!objEntry) {
             console.error("❌ obj_ugc nicht gefunden:", objKey);
-            console.log("🔍 Verfügbare obj_ugc Keys:", Object.keys(ugcData).filter(k => k.startsWith("obj_ugc-")));
+            console.log("🔍 Verfügbare obj_ugc Keys:", Object.keys(ugcData).filter(k => k.startsWith("obj_ugc")));
             document.getElementById("ugc-container").innerHTML = "<p>Dieses UGC hat keine Animation.</p>";
             return;
         }
