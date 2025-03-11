@@ -17,6 +17,13 @@ document.addEventListener("DOMContentLoaded", async function () {
         
         console.log("✅ JSON geladen, Hauptkategorien:", Object.keys(ugcData));
 
+        // Sicherstellen, dass `items` und `objects` existieren
+        if (!ugcData.items || !ugcData.objects) {
+            console.error("❌ Die JSON enthält keine gültigen 'items' oder 'objects'.");
+            document.getElementById("ugc-container").innerHTML = "<p>Fehlerhafte JSON-Struktur.</p>";
+            return;
+        }
+
         // Korrekte Keys setzen
         const itmKey = `itm_ugc-${ugcId}`;
         const objKey = `obj_ugc-${ugcId}`;
@@ -24,33 +31,27 @@ document.addEventListener("DOMContentLoaded", async function () {
         console.log("🔎 Suche in items nach:", itmKey);
         console.log("🔎 Suche in objects nach:", objKey);
 
-        // Prüfen, ob die Kategorien existieren
-        if (!ugcData.items || !ugcData.objects) {
-            console.error("❌ Die JSON enthält keine gültigen 'items' oder 'objects'.");
-            document.getElementById("ugc-container").innerHTML = "<p>Fehlerhafte JSON-Struktur.</p>";
-            return;
-        }
-
-        // Suche nach `itm_ugc` in `items`
+        // `itm_ugc` in `items` suchen
         const itmEntry = ugcData.items[itmKey];
         if (!itmEntry) {
             console.error(`❌ ${itmKey} nicht in items gefunden.`);
-            console.log("🔍 Verfügbare itm_ugc Keys:", Object.keys(ugcData.items).slice(0, 10)); // Debugging: Zeige die ersten 10 Keys
+            console.log("🔍 Verfügbare itm_ugc Keys:", Object.keys(ugcData.items).slice(0, 10)); // Debugging: Zeigt die ersten 10 Einträge
             document.getElementById("ugc-container").innerHTML = "<p>Kein animiertes UGC gefunden.</p>";
             return;
         }
 
+        // Prüfen, ob `placeObject` existiert
         if (!itmEntry.onUse || !itmEntry.onUse.placeObject) {
             console.error("❌ Keine placeObject-Verknüpfung für dieses itm_ugc.");
             document.getElementById("ugc-container").innerHTML = "<p>Kein animiertes UGC gefunden.</p>";
             return;
         }
 
-        // Suche nach `obj_ugc` in `objects`
+        // `obj_ugc` in `objects` suchen
         const objEntry = ugcData.objects[itmEntry.onUse.placeObject];
         if (!objEntry) {
             console.error(`❌ ${objKey} nicht in objects gefunden.`);
-            console.log("🔍 Verfügbare obj_ugc Keys:", Object.keys(ugcData.objects).slice(0, 10)); // Debugging: Zeige die ersten 10 Keys
+            console.log("🔍 Verfügbare obj_ugc Keys:", Object.keys(ugcData.objects).slice(0, 10)); // Debugging: Zeigt die ersten 10 Einträge
             document.getElementById("ugc-container").innerHTML = "<p>Dieses UGC hat keine Animation.</p>";
             return;
         }
