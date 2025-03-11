@@ -3,192 +3,87 @@ document.addEventListener("DOMContentLoaded", async function () {
     let ugcId = params.get("ugc");
 
     if (!ugcId) {
-        console.warn("⚠️ Keine UGC-ID übergeben.");
         document.getElementById("ugc-container").innerHTML = "<p>Kein UGC ausgewählt.</p>";
         return;
     }
 
     console.log("🔍 Gesuchte UGC-ID:", ugcId);
 
+    // Hier bleibt das "-" erhalten!
+    const itmKey = `itm_ugc-${ugcId}`;
+    console.log("🔎 Suche nach itm_ugc:", itmKey);
+
     try {
-        // JSON laden
         const response = await fetch("https://raw.githubusercontent.com/Shambhala222/pixelsugcviewer/main/ugc.json");
         const ugcData = await response.json();
-        
-        console.log("✅ JSON geladen, Hauptkategorien:", Object.keys(ugcData));
 
-        if (!ugcData.items || !ugcData.objects) {
-            console.error("❌ Die JSON enthält keine gültigen 'items' oder 'objects'.");
-            document.getElementById("ugc-container").innerHTML = "<p>Fehlerhafte JSON-Struktur.</p>";
-            return;
-        }
+        const itmEntry = ugcData[itmKey];
 
-        const itmKey = `itm_ugc-${ugcId}`;
-        const objKey = `obj_ugc-${ugcId}`;
-
-        console.log("🔎 Suche in items nach:", itmKey);
-        console.log("🔎 Suche in objects nach:", objKey);
-
-        const itmEntry = ugcData.items[itmKey];
-        if (!itmEntry) {
-            console.error(`❌ ${itmKey} nicht in items gefunden.`);
-            document.getElementById("ugc-container").innerHTML = "<p>Kein UGC gefunden.</p>";
-            return;
-        }
-
-        if (!itmEntry.onUse || !itmEntry.onUse.placeObject) {
-            console.error("❌ Keine placeObject-Verknüpfung für dieses itm_ugc.");
+        if (!itmEntry || !itmEntry.onUse || !itmEntry.onUse.placeObject) {
+            console.error("❌ itm_ugc nicht gefunden oder keine placeObject-Verknüpfung.");
             document.getElementById("ugc-container").innerHTML = "<p>Kein animiertes UGC gefunden.</p>";
             return;
         }
 
-        const objEntry = ugcData.objects[itmEntry.onUse.placeObject];
+        // Hier bleibt das "-" erhalten!
+        const objKey = `obj_ugc-${ugcId}`;
+        console.log("🔎 Suche nach obj_ugc:", objKey);
+
+        const objEntry = ugcData[objKey];
+
         if (!objEntry) {
-            console.error(`❌ ${objKey} nicht in objects gefunden.`);
-            document.getElementById("ugc-container").innerHTML = "<p>Dieses UGC existiert nicht.</p>";
+            console.error("❌ obj_ugc nicht gefunden:", objKey);
+            document.getElementById("ugc-container").innerHTML = "<p>Dieses UGC hat keine Animation.</p>";
             return;
         }
 
-        const isSpritesheet = objEntry?.sprite?.isSpritesheet || false;
-        let imageUrl = objEntry?.sprite?.image || "";
-
-        if (!imageUrl) {
-            console.error("❌ Keine Bild-URL gefunden.");
-            document.getElementById("ugc-container").innerHTML = "<p>Fehler: Kein Bild gefunden.</p>";
+        if (!objEntry.sprite || !objEntry.sprite.isSpritesheet) {
+            console.error("❌ Kein Sprite-Sheet vorhanden.");
+            document.getElementById("ugc-container").innerHTML = "<p>Dieses UGC ist nicht animiert.</p>";
             return;
         }
 
-        if (imageUrl.startsWith("//")) {
-            imageUrl = "https:" + imageUrl;
+        // Sprite-Informationen extrahieren
+        let spriteUrl = objEntry.sprite.image;
+        if (spriteUrl.startsWith("//")) {
+            spriteUrl = "https:" + spriteUrl;  
         }
 
-        console.log(`🎨 Image-URL: ${imageUrl}`);
+        const frameCount = objEntry.sprite.frames;
+        const frameRate = objEntry.sprite.frameRate;
+        const frameWidth = objEntry.sprite.size.width;
+        const frameHeight = objEntry.sprite.size.height;
 
-        // **Container leeren**
-        document.getElementById("ugc-container").innerHTML = "";
+        console.log("✅ Animation gefunden!");
+        console.log("🎨 Sprite-URL:", spriteUrl);
+        console.log("🖼 Frame-Größe:", frameWidth, "x", frameHeight);
+        console.log("🎞 Frames:", frameCount);
+        console.log("⏳ Framerate:", frameRate, "FPS");
 
-        // **Skalierungsfaktor setzen (Vergrößern/Verkleinern)**
-        let scaleFactor = 1.5; // 🔥 Hier kannst du den Skalierungsfaktor ändern
+        // Canvas-Element erstellen
+        const canvas = document.createElement("canvas");
+        canvas.width = frameWidth;
+        canvas.height = frameHeight;
+        document.getElementById("ugc-container").appendChild(canvas);
 
-        if (isSpritesheet) {
-            console.log("✅ Animation erkannt!");
+        const ctx = canvas.getContext("2d");
+        const spriteImage = new Image();
+        spriteImage.src = spriteUrl;
 
-            let frameCount = objEntry?.sprite?.frames || 1; 
-            const frameRate = objEntry?.sprite?.frameRate || 1;
-            const frameWidth = objEntry?.sprite?.size?.width;
-            const frameHeight = objEntry?.sprite?.size?.height;
+        let currentFrame = 0;
 
-            console.log(`🖼 Frame-Größe: ${frameWidth} x ${frameHeight}`);
-            console.log(`🎞 Frames (aus JSON): ${frameCount}`);
-            console.log(`⏳ Framerate: ${frameRate} FPS`);
-
-            // **Canvas für animierte Sprites**
-            const canvas = document.createElement("canvas");
-            canvas.width = frameWidth * scaleFactor;
-            canvas.height = frameHeight * scaleFactor;
-            document.getElementById("ugc-container").appendChild(canvas);
-
-            const ctx = canvas.getContext("2d");
-            const spriteImage = new Image();
-            spriteImage.src = imageUrl;
-
-            spriteImage.onload = function () {
-                const totalImageWidth = spriteImage.width;
-                const totalImageHeight = spriteImage.height;
-
-                console.log(`📏 Gesamte Bildgröße: ${totalImageWidth} x ${totalImageHeight}`);
-
-                const framesPerRow = Math.floor(totalImageWidth / frameWidth);
-                let totalRows = Math.ceil(frameCount / framesPerRow);
-
-                // **Fix: Falls das Bild nur eine Zeile hat, setzen wir totalRows = 1**
-                if (totalImageHeight === frameHeight || totalRows === 1) {
-                    totalRows = 1;
-                }
-
-                // **Korrektur: Frames per Row manuell berechnen, falls der Wert falsch ist**
-                const calculatedFrames = framesPerRow * totalRows;
-                if (calculatedFrames < frameCount) {
-                    console.warn(`⚠️ Fehlerhafte Frames erkannt! JSON sagt ${frameCount}, Bild hat aber nur ${calculatedFrames}.`);
-                    frameCount = calculatedFrames;
-                }
-
-                let currentFrame = 0;
-                let lastFrameTime = performance.now();
-
-                function animateSprite(timestamp) {
-                    const delta = timestamp - lastFrameTime;
-
-                    if (delta >= 1000 / frameRate) {
-                        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                        // **Fix: Frames wirklich nur in einer Zeile berechnen**
-                        const col = currentFrame % framesPerRow;
-                        const sx = col * frameWidth;
-
-                        ctx.drawImage(
-                            spriteImage, 
-                            sx, 0, frameWidth, frameHeight, 
-                            0, 0, frameWidth * scaleFactor, frameHeight * scaleFactor
-                        );
-
-                        currentFrame = (currentFrame + 1) % frameCount;
-                        lastFrameTime = timestamp;
-                    }
-
-                    requestAnimationFrame(animateSprite);
-                }
-
-                requestAnimationFrame(animateSprite);
-            };
-
-        } else {
-            console.log("🖼 Statisches Bild erkannt!");
-
-            // **Direkt ein `<img>`-Tag verwenden für statische Bilder**
-            const imgElement = document.createElement("img");
-            imgElement.src = imageUrl;
-            imgElement.style.display = "block";
-            imgElement.style.margin = "0 auto";
-            imgElement.style.border = "none";
-            imgElement.style.backgroundColor = "transparent";
-            imgElement.style.transform = `scale(${scaleFactor})`; // 🔥 Skalierungsfaktor für statische Bilder
-            document.getElementById("ugc-container").appendChild(imgElement);
+        function animateSprite() {
+            ctx.clearRect(0, 0, frameWidth, frameHeight);
+            ctx.drawImage(spriteImage, currentFrame * frameWidth, 0, frameWidth, frameHeight, 0, 0, frameWidth, frameHeight);
+            currentFrame = (currentFrame + 1) % frameCount;
         }
 
-        // **DRAG & DROP FUNKTIONALITÄT**
-        enableDragAndDrop();
+        spriteImage.onload = function () {
+            setInterval(animateSprite, 1000 / frameRate);
+        };
 
     } catch (error) {
         console.error("❌ Fehler beim Laden der UGC JSON:", error);
         document.getElementById("ugc-container").innerHTML = "<p>Fehler beim Laden der Daten.</p>";
     }
 });
-
-// **Drag & Drop Funktion**
-function enableDragAndDrop() {
-    const container = document.getElementById("ugc-container");
-    let offsetX, offsetY, isDragging = false;
-
-    container.style.position = "absolute";
-    container.style.cursor = "grab";
-    container.style.userSelect = "none";
-
-    container.addEventListener("mousedown", function (e) {
-        isDragging = true;
-        offsetX = e.clientX - container.getBoundingClientRect().left;
-        offsetY = e.clientY - container.getBoundingClientRect().top;
-        container.style.cursor = "grabbing";
-    });
-
-    document.addEventListener("mousemove", function (e) {
-        if (!isDragging) return;
-        container.style.left = `${e.clientX - offsetX}px`;
-        container.style.top = `${e.clientY - offsetY}px`;
-    });
-
-    document.addEventListener("mouseup", function () {
-        isDragging = false;
-        container.style.cursor = "grab";
-    });
-}
