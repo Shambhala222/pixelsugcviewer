@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (!objEntry) {
             console.error(`❌ ${objKey} nicht in objects gefunden.`);
             console.log("🔍 Verfügbare obj_ugc Keys:", Object.keys(ugcData.objects).slice(0, 10));
-            document.getElementById("ugc-container").innerHTML = "<p>Dieses UGC hat keine Animation.</p>";
+            document.getElementById("ugc-container").innerHTML = "<p>Dieses UGC existiert nicht.</p>";
             return;
         }
 
@@ -67,8 +67,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         // **Breite & Höhe für NICHT animierte UGCs aus `physics.size`**
         if (!isSpritesheet) {
-            frameWidth = objEntry?.physics?.size?.width ?? 80; // Falls undefined → Standardwert
-            frameHeight = objEntry?.physics?.size?.height ?? 80;
+            frameWidth = objEntry?.physics?.size?.width; // **Direkt aus `physics.size` holen!**
+            frameHeight = objEntry?.physics?.size?.height;
         }
 
         let imageUrl = objEntry?.sprite?.image || "";
