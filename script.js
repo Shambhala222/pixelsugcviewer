@@ -23,15 +23,15 @@ document.addEventListener("DOMContentLoaded", async function () {
             return;
         }
 
-        const itmKey = itm_ugc-${ugcId};
-        const objKey = obj_ugc-${ugcId};
+        const itmKey = `itm_ugc-${ugcId}`;
+        const objKey = `obj_ugc-${ugcId}`;
 
         console.log("🔎 Suche in items nach:", itmKey);
         console.log("🔎 Suche in objects nach:", objKey);
 
         const itmEntry = ugcData.items[itmKey];
         if (!itmEntry) {
-            console.error(❌ ${itmKey} nicht in items gefunden.);
+            console.error(`❌ ${itmKey} nicht in items gefunden.`);
             document.getElementById("ugc-container").innerHTML = "<p>Kein UGC gefunden.</p>";
             return;
         }
@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         const objEntry = ugcData.objects[itmEntry.onUse.placeObject];
         if (!objEntry) {
-            console.error(❌ ${objKey} nicht in objects gefunden.);
+            console.error(`❌ ${objKey} nicht in objects gefunden.`);
             document.getElementById("ugc-container").innerHTML = "<p>Dieses UGC existiert nicht.</p>";
             return;
         }
@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             imageUrl = "https:" + imageUrl;
         }
 
-        console.log(🎨 Image-URL: ${imageUrl});
+        console.log(`🎨 Image-URL: ${imageUrl}`);
 
         // **Container leeren**
         document.getElementById("ugc-container").innerHTML = "";
@@ -75,9 +75,9 @@ document.addEventListener("DOMContentLoaded", async function () {
             const frameWidth = objEntry?.sprite?.size?.width;
             const frameHeight = objEntry?.sprite?.size?.height;
 
-            console.log(🖼 Frame-Größe: ${frameWidth} x ${frameHeight});
-            console.log(🎞 Frames (aus JSON): ${frameCount});
-            console.log(⏳ Framerate: ${frameRate} FPS);
+            console.log(`🖼 Frame-Größe: ${frameWidth} x ${frameHeight}`);
+            console.log(`🎞 Frames (aus JSON): ${frameCount}`);
+            console.log(`⏳ Framerate: ${frameRate} FPS`);
 
             // **Canvas für animierte Sprites**
             const canvas = document.createElement("canvas");
@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 const totalImageWidth = spriteImage.width;
                 const totalImageHeight = spriteImage.height;
 
-                console.log(📏 Gesamte Bildgröße: ${totalImageWidth} x ${totalImageHeight});
+                console.log(`📏 Gesamte Bildgröße: ${totalImageWidth} x ${totalImageHeight}`);
 
                 const framesPerRow = Math.floor(totalImageWidth / frameWidth);
                 let totalRows = Math.ceil(frameCount / framesPerRow);
@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 // **Korrektur: Frames per Row manuell berechnen, falls der Wert falsch ist**
                 const calculatedFrames = framesPerRow * totalRows;
                 if (calculatedFrames < frameCount) {
-                    console.warn(⚠️ Fehlerhafte Frames erkannt! JSON sagt ${frameCount}, Bild hat aber nur ${calculatedFrames}.);
+                    console.warn(`⚠️ Fehlerhafte Frames erkannt! JSON sagt ${frameCount}, Bild hat aber nur ${calculatedFrames}.`);
                     frameCount = calculatedFrames;
                 }
 
@@ -137,7 +137,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         } else {
             console.log("🖼 Statisches Bild erkannt!");
 
-            // **Direkt ein <img>-Tag verwenden für statische Bilder**
+            // **Direkt ein `<img>`-Tag verwenden für statische Bilder**
             const imgElement = document.createElement("img");
             imgElement.src = imageUrl;
             imgElement.style.display = "block";
