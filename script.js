@@ -67,6 +67,9 @@ document.addEventListener("DOMContentLoaded", async function () {
         // **Container leeren**
         document.getElementById("ugc-container").innerHTML = "";
 
+        // **Skalierungsfaktor setzen**
+        let scaleFactor = 1.5; // 🔥 Ändere diesen Wert, um das Bild zu vergrößern/verkleinern
+
         if (isSpritesheet) {
             console.log("✅ Animation erkannt!");
 
@@ -81,8 +84,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             // **Canvas für animierte Sprites**
             const canvas = document.createElement("canvas");
-            canvas.width = frameWidth;
-            canvas.height = frameHeight;
+            canvas.width = frameWidth * scaleFactor;
+            canvas.height = frameHeight * scaleFactor;
             document.getElementById("ugc-container").appendChild(canvas);
 
             const ctx = canvas.getContext("2d");
@@ -98,12 +101,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                 const framesPerRow = Math.floor(totalImageWidth / frameWidth);
                 let totalRows = Math.ceil(frameCount / framesPerRow);
 
-                // **Fix: Falls das Bild nur eine Zeile hat, setzen wir totalRows = 1**
                 if (totalImageHeight === frameHeight || totalRows === 1) {
                     totalRows = 1;
                 }
 
-                // **Korrektur: Frames per Row manuell berechnen, falls der Wert falsch ist**
                 const calculatedFrames = framesPerRow * totalRows;
                 if (calculatedFrames < frameCount) {
                     console.warn(`⚠️ Fehlerhafte Frames erkannt! JSON sagt ${frameCount}, Bild hat aber nur ${calculatedFrames}.`);
@@ -117,13 +118,13 @@ document.addEventListener("DOMContentLoaded", async function () {
                     const delta = timestamp - lastFrameTime;
 
                     if (delta >= 1000 / frameRate) {
-                        ctx.clearRect(0, 0, frameWidth, frameHeight);
+                        ctx.clearRect(0, 0, frameWidth * scaleFactor, frameHeight * scaleFactor);
 
-                        // **Fix: Frames wirklich nur in einer Zeile berechnen**
                         const col = currentFrame % framesPerRow;
                         const sx = col * frameWidth;
 
-                        ctx.drawImage(spriteImage, sx, 0, frameWidth, frameHeight, 0, 0, frameWidth, frameHeight);
+                        ctx.drawImage(spriteImage, sx, 0, frameWidth, frameHeight, 
+                            0, 0, frameWidth * scaleFactor, frameHeight * scaleFactor);
                         currentFrame = (currentFrame + 1) % frameCount;
                         lastFrameTime = timestamp;
                     }
@@ -143,6 +144,9 @@ document.addEventListener("DOMContentLoaded", async function () {
             imgElement.style.display = "block";
             imgElement.style.margin = "0 auto";
             imgElement.style.border = "1px solid black";
+            imgElement.style.width = "auto";
+            imgElement.style.height = "auto";
+            imgElement.style.transform = `scale(${scaleFactor})`; // **Skalierung für statische Bilder**
             document.getElementById("ugc-container").appendChild(imgElement);
         }
 
