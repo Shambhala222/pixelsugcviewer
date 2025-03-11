@@ -41,10 +41,3 @@ img {
     display: block;
     background-color: transparent;
 }
-
-/* UGC-Container beweglich machen */
-#ugc-container {
-    position: absolute;
-    cursor: grab;
-    user-select: none;
-}
