@@ -17,33 +17,27 @@ document.addEventListener("DOMContentLoaded", async function () {
         
         console.log("✅ JSON geladen, Gesamtanzahl UGCs:", Object.keys(ugcData).length);
 
-        // 1️⃣ ITM-UGC suchen
+        // 🚨 WICHTIG: UGC-ID darf NICHT verändert werden! Sie bleibt exakt, wie sie ist.
         const itmKey = `itm_ugc-${ugcId}`;
-        console.log("🔎 Suche nach itm_ugc:", itmKey);
+        const objKey = `obj_ugc-${ugcId}`;
 
+        console.log("🔎 Suche nach itm_ugc:", itmKey);
+        console.log("🔎 Suche nach obj_ugc:", objKey);
+
+        // 1️⃣ ITM-UGC suchen
         const itmEntry = ugcData[itmKey];
         if (!itmEntry || !itmEntry.onUse || !itmEntry.onUse.placeObject) {
             console.error("❌ itm_ugc nicht gefunden oder keine placeObject-Verknüpfung.");
+            console.log("🔍 Verfügbare itm_ugc Keys:", Object.keys(ugcData).filter(k => k.startsWith("itm_ugc-")));
             document.getElementById("ugc-container").innerHTML = "<p>Kein animiertes UGC gefunden.</p>";
             return;
         }
 
         // 2️⃣ OBJ-UGC suchen
-        const objKey = itmEntry.onUse.placeObject;
-        console.log("🔎 Suche nach obj_ugc:", objKey);
-
-        // Prüfen, ob "objects" existiert
-        if (!ugcData.objects) {
-            console.error("❌ Keine 'objects'-Sektion in der JSON gefunden.");
-            document.getElementById("ugc-container").innerHTML = "<p>Daten fehlerhaft.</p>";
-            return;
-        }
-
-        // Im "objects"-Block nach obj_ugc suchen
-        const objEntry = ugcData["objects"][objKey];
+        const objEntry = ugcData[objKey];
         if (!objEntry) {
             console.error("❌ obj_ugc nicht gefunden:", objKey);
-            console.log("🔎 Alle verfügbaren obj_ugc Keys:", Object.keys(ugcData["objects"])); // Debugging
+            console.log("🔍 Verfügbare obj_ugc Keys:", Object.keys(ugcData).filter(k => k.startsWith("obj_ugc-")));
             document.getElementById("ugc-container").innerHTML = "<p>Dieses UGC hat keine Animation.</p>";
             return;
         }
