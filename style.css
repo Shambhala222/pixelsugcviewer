@@ -15,7 +15,7 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: url('background.png') no-repeat center center;
+    background: url('displaybackground.png') no-repeat center center;
     background-size: cover;
     width: 300px;
     height: 300px;
