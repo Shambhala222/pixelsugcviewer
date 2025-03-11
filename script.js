@@ -11,44 +11,34 @@ document.addEventListener("DOMContentLoaded", async function () {
     console.log("🔍 Gesuchte UGC-ID:", ugcId);
 
     try {
-        // Lade die UGC JSON von GitHub
+        // JSON laden
         const response = await fetch("https://raw.githubusercontent.com/Shambhala222/pixelsugcviewer/main/ugc.json");
         const ugcData = await response.json();
         
-        console.log("✅ JSON geladen, Gesamtanzahl UGCs:", Object.keys(ugcData).length);
-        console.log("🔍 Erste 50 Keys in UGC JSON:", Object.keys(ugcData).slice(0, 50));
+        console.log("✅ JSON geladen, Gesamtanzahl Kategorien:", Object.keys(ugcData));
 
-        // 🚨 WICHTIG: Immer sicherstellen, dass `itm_ugc-` und `obj_ugc-` korrekt sind!
-        const itmKey = `itm_ugc-${ugcId}`;  // Immer mit dem festen Minus
-        console.log("🔎 Vergleich mit Keys in JSON:", Object.keys(ugcData).filter(k => k.includes("itm_ugc")));
-        const objKey = `obj_ugc-${ugcId}`;  // Immer mit dem festen Minus
+        // Korrekte Keys setzen
+        const itmKey = `itm_ugc-${ugcId}`;
+        const objKey = `obj_ugc-${ugcId}`;
 
         console.log("🔎 Suche nach itm_ugc:", itmKey);
         console.log("🔎 Suche nach obj_ugc:", objKey);
 
-        // 🔍 1️⃣ ITM-UGC suchen
-        if (!(itmKey in ugcData)) {
-            console.error(`❌ itm_ugc nicht gefunden: ${itmKey}`);
-            console.log("🔍 Verfügbare itm_ugc Keys:", Object.keys(ugcData).filter(k => k.startsWith("itm_ugc")));
-            document.getElementById("ugc-container").innerHTML = "<p>Kein animiertes UGC gefunden.</p>";
-            return;
-        }
+        // Suche nach `itm_ugc` in `items`
         const itmEntry = ugcData.items ? ugcData.items[itmKey] : undefined;
-
-        if (!itmEntry.onUse || !itmEntry.onUse.placeObject) {
-            console.error(`❌ itm_ugc hat keine placeObject-Verknüpfung: ${itmKey}`);
+        if (!itmEntry || !itmEntry.onUse || !itmEntry.onUse.placeObject) {
+            console.error("❌ itm_ugc nicht gefunden oder keine placeObject-Verknüpfung.");
             document.getElementById("ugc-container").innerHTML = "<p>Kein animiertes UGC gefunden.</p>";
             return;
         }
 
-        // 🔍 2️⃣ OBJ-UGC suchen
-        if (!(objKey in ugcData)) {
-            console.error(`❌ obj_ugc nicht gefunden: ${objKey}`);
-            console.log("🔍 Verfügbare obj_ugc Keys:", Object.keys(ugcData).filter(k => k.startsWith("obj_ugc")));
+        // Suche nach `obj_ugc` in `objects`
+        const objEntry = ugcData.objects ? ugcData.objects[itmEntry.onUse.placeObject] : undefined;
+        if (!objEntry) {
+            console.error("❌ obj_ugc nicht gefunden:", objKey);
             document.getElementById("ugc-container").innerHTML = "<p>Dieses UGC hat keine Animation.</p>";
             return;
         }
-        const objEntry = ugcData.objects ? ugcData.objects[objKey] : undefined;
 
         if (!objEntry.sprite || !objEntry.sprite.isSpritesheet) {
             console.error("❌ Kein Sprite-Sheet vorhanden.");
@@ -56,10 +46,10 @@ document.addEventListener("DOMContentLoaded", async function () {
             return;
         }
 
-        // 🔥 3️⃣ Animation laden
+        // Bild-URL & Animationseigenschaften extrahieren
         let spriteUrl = objEntry.sprite.image;
         if (spriteUrl.startsWith("//")) {
-            spriteUrl = "https:" + spriteUrl; // Korrektur der URL
+            spriteUrl = "https:" + spriteUrl;
         }
 
         const frameCount = objEntry.sprite.frames;
@@ -73,7 +63,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         console.log("🎞 Frames:", frameCount);
         console.log("⏳ Framerate:", frameRate, "FPS");
 
-        // 4️⃣ Canvas für Animation erstellen
+        // Canvas für die Animation erstellen
         const canvas = document.createElement("canvas");
         canvas.width = frameWidth;
         canvas.height = frameHeight;
