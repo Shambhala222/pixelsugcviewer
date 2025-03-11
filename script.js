@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     console.log("🔍 Gesuchte UGC-ID:", ugcId);
 
     try {
+        // JSON laden
         const response = await fetch("https://raw.githubusercontent.com/Shambhala222/pixelsugcviewer/main/ugc.json");
         const ugcData = await response.json();
         
@@ -37,7 +38,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         if (!itmEntry.onUse || !itmEntry.onUse.placeObject) {
             console.error("❌ Keine placeObject-Verknüpfung für dieses itm_ugc.");
-            document.getElementById("ugc-container").innerHTML = "<p>Kein verknüpftes Objekt gefunden.</p>";
+            document.getElementById("ugc-container").innerHTML = "<p>Kein animiertes UGC gefunden.</p>";
             return;
         }
 
@@ -63,13 +64,14 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         console.log(`🎨 Image-URL: ${imageUrl}`);
 
+        // **Container leeren**
         document.getElementById("ugc-container").innerHTML = "";
 
         if (isSpritesheet) {
             console.log("✅ Animation erkannt!");
 
-            let frameCount = objEntry?.sprite?.frames || 1; 
-            let frameRate = objEntry?.sprite?.frameRate || 1;
+            const frameCount = objEntry?.sprite?.frames || 1; 
+            const frameRate = objEntry?.sprite?.frameRate || 1;
             const frameWidth = objEntry?.sprite?.size?.width;
             const frameHeight = objEntry?.sprite?.size?.height;
 
@@ -88,32 +90,36 @@ document.addEventListener("DOMContentLoaded", async function () {
             spriteImage.src = imageUrl;
 
             let currentFrame = 0;
-            let lastFrameTime = 0;
-            const frameDuration = 1000 / frameRate;
+            let lastTime = 0;
+            let frameInterval = 1000 / frameRate; // Berechnet Zeit pro Frame
 
             function animateSprite(timestamp) {
-                if (timestamp - lastFrameTime >= frameDuration) {
+                if (!lastTime) lastTime = timestamp;
+                let deltaTime = timestamp - lastTime;
+
+                if (deltaTime >= frameInterval) {
                     ctx.clearRect(0, 0, frameWidth, frameHeight);
                     ctx.drawImage(spriteImage, currentFrame * frameWidth, 0, frameWidth, frameHeight, 0, 0, frameWidth, frameHeight);
-                    currentFrame = (currentFrame + 1) % frameCount;
-                    lastFrameTime = timestamp;
+                    currentFrame = (currentFrame + 1) % frameCount; // **Modulo, damit Loop flüssig bleibt**
+                    lastTime = timestamp;
                 }
+
                 requestAnimationFrame(animateSprite);
             }
 
             spriteImage.onload = function () {
-                console.log("🎬 Starte Animation...");
                 requestAnimationFrame(animateSprite);
             };
 
         } else {
             console.log("🖼 Statisches Bild erkannt!");
 
+            // **Direkt ein `<img>`-Tag verwenden für statische Bilder**
             const imgElement = document.createElement("img");
             imgElement.src = imageUrl;
-            imgElement.style.display = "block";
-            imgElement.style.margin = "0 auto";
-            imgElement.style.border = "1px solid black";
+            imgElement.style.display = "block"; // Bild wird mittig zentriert
+            imgElement.style.margin = "0 auto"; // Zentriert es horizontal
+            imgElement.style.border = "1px solid black"; // Kleiner Rahmen für besseren Look
             document.getElementById("ugc-container").appendChild(imgElement);
         }
 
