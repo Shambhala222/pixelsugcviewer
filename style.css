@@ -43,3 +43,9 @@ h1 {
 p {
     color: #555;
 }
+
+#ugc-container {
+    position: absolute;
+    cursor: grab;
+    user-select: none;
+}
