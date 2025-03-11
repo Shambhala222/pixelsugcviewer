@@ -11,7 +11,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     console.log("🔍 Gesuchte UGC-ID:", ugcId);
 
     try {
-        // JSON laden
         const response = await fetch("https://raw.githubusercontent.com/Shambhala222/pixelsugcviewer/main/ugc.json");
         const ugcData = await response.json();
         
@@ -38,7 +37,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         if (!itmEntry.onUse || !itmEntry.onUse.placeObject) {
             console.error("❌ Keine placeObject-Verknüpfung für dieses itm_ugc.");
-            document.getElementById("ugc-container").innerHTML = "<p>Kein animiertes UGC gefunden.</p>";
+            document.getElementById("ugc-container").innerHTML = "<p>Kein verknüpftes Objekt gefunden.</p>";
             return;
         }
 
@@ -64,14 +63,13 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         console.log(`🎨 Image-URL: ${imageUrl}`);
 
-        // **Container leeren**
         document.getElementById("ugc-container").innerHTML = "";
 
         if (isSpritesheet) {
             console.log("✅ Animation erkannt!");
 
-            const frameCount = objEntry?.sprite?.frames || 1; 
-            const frameRate = objEntry?.sprite?.frameRate || 1;
+            let frameCount = objEntry?.sprite?.frames || 1; 
+            let frameRate = objEntry?.sprite?.frameRate || 1;
             const frameWidth = objEntry?.sprite?.size?.width;
             const frameHeight = objEntry?.sprite?.size?.height;
 
@@ -90,25 +88,32 @@ document.addEventListener("DOMContentLoaded", async function () {
             spriteImage.src = imageUrl;
 
             let currentFrame = 0;
-            function animateSprite() {
-                ctx.clearRect(0, 0, frameWidth, frameHeight);
-                ctx.drawImage(spriteImage, currentFrame * frameWidth, 0, frameWidth, frameHeight, 0, 0, frameWidth, frameHeight);
-                currentFrame = (currentFrame + 1) % frameCount;
+            let lastFrameTime = 0;
+            const frameDuration = 1000 / frameRate;
+
+            function animateSprite(timestamp) {
+                if (timestamp - lastFrameTime >= frameDuration) {
+                    ctx.clearRect(0, 0, frameWidth, frameHeight);
+                    ctx.drawImage(spriteImage, currentFrame * frameWidth, 0, frameWidth, frameHeight, 0, 0, frameWidth, frameHeight);
+                    currentFrame = (currentFrame + 1) % frameCount;
+                    lastFrameTime = timestamp;
+                }
+                requestAnimationFrame(animateSprite);
             }
 
             spriteImage.onload = function () {
-                setInterval(animateSprite, 1000 / frameRate);
+                console.log("🎬 Starte Animation...");
+                requestAnimationFrame(animateSprite);
             };
 
         } else {
             console.log("🖼 Statisches Bild erkannt!");
 
-            // **Direkt ein `<img>`-Tag verwenden für statische Bilder**
             const imgElement = document.createElement("img");
             imgElement.src = imageUrl;
-            imgElement.style.display = "block"; // Bild wird mittig zentriert
-            imgElement.style.margin = "0 auto"; // Zentriert es horizontal
-            imgElement.style.border = "1px solid black"; // Kleiner Rahmen für besseren Look
+            imgElement.style.display = "block";
+            imgElement.style.margin = "0 auto";
+            imgElement.style.border = "1px solid black";
             document.getElementById("ugc-container").appendChild(imgElement);
         }
 
