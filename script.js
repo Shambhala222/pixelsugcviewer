@@ -8,17 +8,31 @@ document.addEventListener("DOMContentLoaded", async function () {
         return;
     }
 
-    console.log("🔎 Alle vorhandenen Keys:", Object.keys(ugcData));
+    console.log("🔍 Gesuchte UGC-ID:", ugcId);
 
-    const itmKey = `itm_ugc-${ugcId}`;
-    const objKey = `obj_ugc-${ugcId}`;
+    // Stelle sicher, dass das Minus korrekt gesetzt bleibt
+    const itmKey = `itm_ugc${ugcId}`;  
+    const objKey = `obj_ugc${ugcId}`;  
+
+    console.log("🔎 Suche nach itm_ugc:", itmKey);
+    console.log("🔎 Suche nach obj_ugc:", objKey);
 
     try {
+        // 1️⃣ JSON-Datei abrufen
         const response = await fetch("https://raw.githubusercontent.com/Shambhala222/pixelsugcviewer/main/ugc.json");
         const ugcData = await response.json();
         
         console.log("✅ JSON geladen, Gesamtanzahl UGCs:", Object.keys(ugcData).length);
 
+        // 2️⃣ Suche nach itm_ugc
+        const itmEntry = ugcData[itmKey];
+        if (!itmEntry || !itmEntry.onUse || !itmEntry.onUse.placeObject) {
+            console.error("❌ itm_ugc nicht gefunden oder keine placeObject-Verknüpfung.");
+            document.getElementById("ugc-container").innerHTML = "<p>Kein animiertes UGC gefunden.</p>";
+            return;
+        }
+
+        // 3️⃣ Suche nach obj_ugc
         const objEntry = ugcData[objKey];
         if (!objEntry) {
             console.error("❌ obj_ugc nicht gefunden:", objKey);
@@ -32,6 +46,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             return;
         }
 
+        // 4️⃣ Extrahiere die richtigen Werte
         let spriteUrl = objEntry.sprite.image;
         if (spriteUrl.startsWith("//")) {
             spriteUrl = "https:" + spriteUrl;
@@ -48,6 +63,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         console.log("🎞 Frames:", frameCount);
         console.log("⏳ Framerate:", frameRate, "FPS");
 
+        // 5️⃣ Canvas-Element erstellen
         const canvas = document.createElement("canvas");
         canvas.width = frameWidth;
         canvas.height = frameHeight;
