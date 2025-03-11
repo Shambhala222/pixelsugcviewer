@@ -60,8 +60,16 @@ document.addEventListener("DOMContentLoaded", async function () {
         const isSpritesheet = objEntry?.sprite?.isSpritesheet || false;
         const frameCount = objEntry?.sprite?.frames || 1; 
         const frameRate = objEntry?.sprite?.frameRate || 1;
-        const frameWidth = objEntry?.sprite?.size?.width
-        const frameHeight = objEntry?.sprite?.size?.height
+
+        // **Breite & Höhe für animierte UGCs**
+        let frameWidth = objEntry?.sprite?.size?.width;
+        let frameHeight = objEntry?.sprite?.size?.height;
+
+        // **Breite & Höhe für NICHT animierte UGCs aus `physics.size`**
+        if (!isSpritesheet) {
+            frameWidth = objEntry?.physics?.size?.width; // Falls undefined → Standardwert
+            frameHeight = objEntry?.physics?.size?.height;
+        }
 
         let imageUrl = objEntry?.sprite?.image || "";
 
