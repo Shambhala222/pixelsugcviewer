@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         return;
     }
 
-    console.log("🔍 Gesuchte UGC-ID:", ugcId);
+    console.log("🔎 Alle vorhandenen Keys:", Object.keys(ugcData));
 
     const itmKey = `itm_ugc-${ugcId}`;
     const objKey = `obj_ugc-${ugcId}`;
