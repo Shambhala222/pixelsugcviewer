@@ -11,7 +11,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     console.log("🔍 Gesuchte UGC-ID:", ugcId);
 
     try {
-        // JSON laden
         const response = await fetch("https://raw.githubusercontent.com/Shambhala222/pixelsugcviewer/main/ugc.json");
         const ugcData = await response.json();
         
@@ -49,7 +48,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             return;
         }
 
-        // Prüfen, ob das UGC animiert ist oder nicht
         const isSpritesheet = objEntry?.sprite?.isSpritesheet || false;
         let imageUrl = objEntry?.sprite?.image || "";
 
@@ -65,20 +63,28 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         console.log(`🎨 Image-URL: ${imageUrl}`);
 
-        // **Container leeren**
         document.getElementById("ugc-container").innerHTML = "";
 
         if (isSpritesheet) {
             console.log("✅ Animation erkannt!");
 
-            const frameCount = objEntry?.sprite?.frames || 1; 
-            const frameRate = objEntry?.sprite?.frameRate || 1;
+            let frameCount = objEntry?.sprite?.frames || 1; 
+            let frameRate = objEntry?.sprite?.frameRate || 1;
             const frameWidth = objEntry?.sprite?.size?.width;
             const frameHeight = objEntry?.sprite?.size?.height;
 
             console.log(`🖼 Frame-Größe: ${frameWidth} x ${frameHeight}`);
             console.log(`🎞 Frames: ${frameCount}`);
             console.log(`⏳ Framerate: ${frameRate} FPS`);
+
+            // **Fix für Framerate, damit keine weißen Frames entstehen**
+            if (frameRate > frameCount * 2) {
+                frameRate = frameCount; // Framerate auf Anzahl der Frames setzen
+            } else if (frameRate % frameCount !== 0) {
+                frameRate = Math.round(frameRate / frameCount) * frameCount; // Rundung auf eine passende FPS
+            }
+
+            console.log(`🛠 Angepasste Framerate: ${frameRate} FPS`);
 
             // **Canvas für animierte Sprites**
             const canvas = document.createElement("canvas");
@@ -109,12 +115,11 @@ document.addEventListener("DOMContentLoaded", async function () {
         } else {
             console.log("🖼 Statisches Bild erkannt!");
 
-            // **Direkt ein `<img>`-Tag verwenden für statische Bilder**
             const imgElement = document.createElement("img");
             imgElement.src = imageUrl;
-            imgElement.style.display = "block"; // Bild wird mittig zentriert
-            imgElement.style.margin = "0 auto"; // Zentriert es horizontal
-            imgElement.style.border = "1px solid black"; // Kleiner Rahmen für besseren Look
+            imgElement.style.display = "block";
+            imgElement.style.margin = "0 auto";
+            imgElement.style.border = "1px solid black";
             document.getElementById("ugc-container").appendChild(imgElement);
         }
 
