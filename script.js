@@ -119,6 +119,11 @@ document.addEventListener("DOMContentLoaded", async function () {
                 console.log(`📏 Gesamte Bildgröße: ${totalImageWidth} x ${totalImageHeight}`);
                 
                 const framesPerRow = Math.floor(totalImageWidth / frameWidth);
+                const totalRows = Math.floor(totalImageHeight / frameHeight);
+                const totalFramesCalculated = framesPerRow * totalRows;
+                
+                console.log(`📊 Berechnete Frames: ${totalFramesCalculated} (Erwartet: ${frameCount})`);
+                
                 let currentFrame = 0;
                 let lastFrameTime = performance.now();
                 
@@ -127,8 +132,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                     if (delta >= 1000 / frameRate) {
                         ctx.clearRect(0, 0, frameWidth, frameHeight);
                         const col = currentFrame % framesPerRow;
+                        const row = Math.floor(currentFrame / framesPerRow);
                         const sx = col * frameWidth;
-                        ctx.drawImage(spriteImage, sx, 0, frameWidth, frameHeight, 0, 0, frameWidth, frameHeight);
+                        const sy = row * frameHeight;
+                        ctx.drawImage(spriteImage, sx, sy, frameWidth, frameHeight, 0, 0, frameWidth, frameHeight);
                         currentFrame = (currentFrame + 1) % frameCount;
                         lastFrameTime = timestamp;
                     }
