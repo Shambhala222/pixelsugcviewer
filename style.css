@@ -9,11 +9,9 @@ body {
     align-items: center;
     justify-content: center;
     height: 100vh;
-    background-image: url("landbackground.png"); /* HINTERGRUNDBILD LADEN */
-    background-size: cover; /* Bild skaliert auf Bildschirmgröße */
-    background-position: center; /* Bild bleibt zentriert */
-    background-repeat: no-repeat; /* Kein Wiederholen des Bildes */
-    background-attachment: fixed; /* Hintergrund bleibt fixiert */
+    background-image: url("landbackground.png");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
 /* Styling für den Container, in dem das UGC angezeigt wird */
@@ -21,31 +19,25 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 80vh; /* 80% der Bildschirmhöhe */
-    width: 80vw; /* 80% der Bildschirmbreite */
-    background-color: rgba(255, 255, 255, 0); /* 50% Transparenz */
-    border-radius: 10px; /* Abgerundete Ecken */
-    padding: 20px;
+    height: auto;
+    width: auto;
+    background-color: rgba(255, 255, 255, 0);
+    border-radius: 10px;
+    padding: 10px;
     margin: auto;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
-    position: relative;
+    position: absolute;
+    box-shadow: none;
 }
 
-/* Canvas (Animation) zentrieren */
+/* Canvas (Animation) */
 canvas {
-    position: relative;
-    z-index: 1;
+    background-color: transparent !important;
 }
 
-/* Überschrift-Styling */
-h1 {
-    margin-top: 20px;
-    color: #333;
-}
-
-/* Absatz-Text */
-p {
-    color: #555;
+/* Bild-Styling */
+img {
+    display: block;
+    background-color: transparent;
 }
 
 /* UGC-Container beweglich machen */
