@@ -60,8 +60,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         const isSpritesheet = objEntry?.sprite?.isSpritesheet || false;
         const frameCount = objEntry?.sprite?.frames || 1; 
         const frameRate = objEntry?.sprite?.frameRate || 1;
-        const frameWidth = objEntry?.sprite?.size?.width || 80;  // Korrektur: Sollte aus den Object-Daten kommen
-        const frameHeight = objEntry?.sprite?.size?.height || 80; // Korrektur: Sollte aus den Object-Daten kommen
+        const frameWidth = objEntry?.sprite?.size?.width
+        const frameHeight = objEntry?.sprite?.size?.height
 
         let imageUrl = objEntry?.sprite?.image || "";
 
