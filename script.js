@@ -10,26 +10,14 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     console.log("🔍 Gesuchte UGC-ID:", ugcId);
 
+    const itmKey = `itm_ugc-${ugcId}`;
+    const objKey = `obj_ugc-${ugcId}`;
+
     try {
-        // ⬇️ JSON VORHER LADEN, damit wir danach suchen können
         const response = await fetch("https://raw.githubusercontent.com/Shambhala222/pixelsugcviewer/main/ugc.json");
         const ugcData = await response.json();
         
         console.log("✅ JSON geladen, Gesamtanzahl UGCs:", Object.keys(ugcData).length);
-
-        const itmKey = `itm_ugc-${ugcId}`;
-        console.log("🔎 Alle Keys in der JSON:", Object.keys(ugcData));
-        console.log("🔎 Suche nach exakt:", itmKey);
-
-        const itmEntry = ugcData[itmKey];
-        if (!itmEntry || !itmEntry.onUse || !itmEntry.onUse.placeObject) {
-            console.error("❌ itm_ugc nicht gefunden oder keine placeObject-Verknüpfung.");
-            document.getElementById("ugc-container").innerHTML = "<p>Kein animiertes UGC gefunden.</p>";
-            return;
-        }
-
-        const objKey = itmEntry.onUse.placeObject;
-        console.log("🔎 Suche nach obj_ugc:", objKey);
 
         const objEntry = ugcData[objKey];
         if (!objEntry) {
