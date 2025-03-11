@@ -17,30 +17,36 @@ document.addEventListener("DOMContentLoaded", async function () {
         
         console.log("✅ JSON geladen, Gesamtanzahl UGCs:", Object.keys(ugcData).length);
 
-        // 🚨 WICHTIG: ITM_UGC & OBJ_UGC BEHALTEN IHR MINUS
-        const itmKey = `itm_ugc-${ugcId}`;  // Feste Struktur: itm_ugc-<ID>
-        const objKey = `obj_ugc-${ugcId}`;  // Feste Struktur: obj_ugc-<ID>
+        // 🚨 WICHTIG: Immer sicherstellen, dass `itm_ugc-` und `obj_ugc-` korrekt sind!
+        const itmKey = `itm_ugc-${ugcId}`;  // Immer mit dem festen Minus
+        const objKey = `obj_ugc-${ugcId}`;  // Immer mit dem festen Minus
 
         console.log("🔎 Suche nach itm_ugc:", itmKey);
         console.log("🔎 Suche nach obj_ugc:", objKey);
 
-        // 1️⃣ ITM-UGC suchen
-        const itmEntry = ugcData[itmKey];
-        if (!itmEntry || !itmEntry.onUse || !itmEntry.onUse.placeObject) {
-            console.error("❌ itm_ugc nicht gefunden oder keine placeObject-Verknüpfung.");
+        // 🔍 1️⃣ ITM-UGC suchen
+        if (!(itmKey in ugcData)) {
+            console.error(`❌ itm_ugc nicht gefunden: ${itmKey}`);
             console.log("🔍 Verfügbare itm_ugc Keys:", Object.keys(ugcData).filter(k => k.startsWith("itm_ugc")));
             document.getElementById("ugc-container").innerHTML = "<p>Kein animiertes UGC gefunden.</p>";
             return;
         }
+        const itmEntry = ugcData[itmKey];
 
-        // 2️⃣ OBJ-UGC suchen
-        const objEntry = ugcData[objKey];
-        if (!objEntry) {
-            console.error("❌ obj_ugc nicht gefunden:", objKey);
+        if (!itmEntry.onUse || !itmEntry.onUse.placeObject) {
+            console.error(`❌ itm_ugc hat keine placeObject-Verknüpfung: ${itmKey}`);
+            document.getElementById("ugc-container").innerHTML = "<p>Kein animiertes UGC gefunden.</p>";
+            return;
+        }
+
+        // 🔍 2️⃣ OBJ-UGC suchen
+        if (!(objKey in ugcData)) {
+            console.error(`❌ obj_ugc nicht gefunden: ${objKey}`);
             console.log("🔍 Verfügbare obj_ugc Keys:", Object.keys(ugcData).filter(k => k.startsWith("obj_ugc")));
             document.getElementById("ugc-container").innerHTML = "<p>Dieses UGC hat keine Animation.</p>";
             return;
         }
+        const objEntry = ugcData[objKey];
 
         if (!objEntry.sprite || !objEntry.sprite.isSpritesheet) {
             console.error("❌ Kein Sprite-Sheet vorhanden.");
@@ -48,7 +54,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             return;
         }
 
-        // 3️⃣ Animation laden
+        // 🔥 3️⃣ Animation laden
         let spriteUrl = objEntry.sprite.image;
         if (spriteUrl.startsWith("//")) {
             spriteUrl = "https:" + spriteUrl; // Korrektur der URL
@@ -65,7 +71,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         console.log("🎞 Frames:", frameCount);
         console.log("⏳ Framerate:", frameRate, "FPS");
 
-        // 4️⃣ Canvas erstellen für Animation
+        // 4️⃣ Canvas für Animation erstellen
         const canvas = document.createElement("canvas");
         canvas.width = frameWidth;
         canvas.height = frameHeight;
