@@ -16,35 +16,52 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         console.log("✅ JSON geladen, Gesamtanzahl UGCs:", Object.keys(ugcData).length);
 
-        // Prüfen, ob das UGC existiert
+        // **Alle verfügbaren Keys anzeigen**
+        console.log("🔎 JSON enthält folgende Haupt-Keys:", Object.keys(ugcData));
+
+        // **itm_ugc suchen**
         const itmKey = `itm_ugc-${ugcId}`;
+        console.log("🔎 Suche nach itm_ugc:", itmKey);
         const itmEntry = ugcData[itmKey];
 
-        if (!itmEntry || !itmEntry.onUse || !itmEntry.onUse.placeObject) {
-            console.error("❌ itm_ugc nicht gefunden oder keine placeObject-Verknüpfung.");
-            document.getElementById("ugc-container").innerHTML = "<p>Kein animiertes UGC gefunden.</p>";
+        if (!itmEntry) {
+            console.error(`❌ itm_ugc nicht gefunden: ${itmKey}`);
+            console.log("🔍 Verfügbare itm_ugc Keys:", Object.keys(ugcData).filter(key => key.startsWith("itm_ugc")));
+            document.getElementById("ugc-container").innerHTML = "<p>Kein passendes itm_ugc gefunden.</p>";
             return;
         }
 
-        const objKey = itmEntry.onUse.placeObject;
+        console.log("✅ itm_ugc gefunden:", itmEntry);
+
+        // **obj_ugc suchen**
+        const objKey = itmEntry.onUse?.placeObject || "";
+        console.log("🔎 Suche nach obj_ugc:", objKey);
         const objEntry = ugcData[objKey];
 
         if (!objEntry) {
-            console.error("❌ obj_ugc nicht gefunden:", objKey);
-            document.getElementById("ugc-container").innerHTML = "<p>Dieses UGC existiert nicht in den Objekten.</p>";
+            console.warn(`⚠️ obj_ugc nicht gefunden für ${objKey}, es könnte statisch sein.`);
+        } else {
+            console.log("✅ obj_ugc gefunden:", objEntry);
+        }
+
+        // **Bild-URL ermitteln**
+        let spriteUrl = objEntry?.sprite?.image || itmEntry?.image;
+        if (!spriteUrl) {
+            console.error("❌ Kein Bild gefunden für dieses UGC.");
+            document.getElementById("ugc-container").innerHTML = "<p>Fehler: Kein Bild gefunden.</p>";
             return;
         }
 
-        let spriteUrl = objEntry.sprite?.image || itmEntry.image;
         if (spriteUrl.startsWith("//")) {
             spriteUrl = "https:" + spriteUrl;
         }
 
-        const isSpritesheet = objEntry.sprite?.isSpritesheet || false;
-        const frameCount = objEntry.sprite?.frames || 1; // Standardwert: 1 Frame für statische Bilder
-        const frameRate = objEntry.sprite?.frameRate || 1; // Standard: 1 FPS für statische Bilder
-        const frameWidth = objEntry.sprite?.size?.width || 80;
-        const frameHeight = objEntry.sprite?.size?.height || 80;
+        // **Animationseigenschaften**
+        const isSpritesheet = objEntry?.sprite?.isSpritesheet || false;
+        const frameCount = objEntry?.sprite?.frames || 1; 
+        const frameRate = objEntry?.sprite?.frameRate || 1;
+        const frameWidth = objEntry?.sprite?.size?.width || 80;
+        const frameHeight = objEntry?.sprite?.size?.height || 80;
 
         console.log("🎨 Sprite-URL:", spriteUrl);
         console.log("🖼 Frame-Größe:", frameWidth, "x", frameHeight);
@@ -52,6 +69,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         console.log("⏳ Framerate:", frameRate, "FPS");
         console.log("🖼 Ist ein SpriteSheet?", isSpritesheet);
 
+        // **Canvas erzeugen**
         const canvas = document.createElement("canvas");
         canvas.width = frameWidth;
         canvas.height = frameHeight;
