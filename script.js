@@ -79,39 +79,53 @@ document.addEventListener("DOMContentLoaded", async function () {
             console.log(`🎞 Frames: ${frameCount}`);
             console.log(`⏳ Framerate: ${frameRate} FPS`);
 
-            // **Loop-Anpassung: Wenn die Framerate nicht exakt passt**
-            if (frameRate % frameCount !== 0) {
-                frameRate = Math.ceil(frameCount / frameRate) * frameRate; // Korrigierte Framerate für flüssige Loops
-                console.log(`⚡ Korrigierte Framerate für besseren Loop: ${frameRate} FPS`);
-            }
-
-            // **Canvas für animierte Sprites**
-            const canvas = document.createElement("canvas");
-            canvas.width = frameWidth;
-            canvas.height = frameHeight;
-            document.getElementById("ugc-container").appendChild(canvas);
-
-            const ctx = canvas.getContext("2d");
+            // **Hier kommt die neue Logik für Reihen & Spalten**
             const spriteImage = new Image();
             spriteImage.src = imageUrl;
 
-            let currentFrame = 0;
-            let lastFrameTime = performance.now();
+            spriteImage.onload = function () {
+                const totalImageWidth = spriteImage.width;
+                const totalImageHeight = spriteImage.height;
 
-            function animateSprite(timestamp) {
-                const delta = timestamp - lastFrameTime;
+                console.log(`📏 Gesamte Bildgröße: ${totalImageWidth} x ${totalImageHeight}`);
 
-                if (delta >= 1000 / frameRate) {
-                    ctx.clearRect(0, 0, frameWidth, frameHeight);
-                    ctx.drawImage(spriteImage, currentFrame * frameWidth, 0, frameWidth, frameHeight, 0, 0, frameWidth, frameHeight);
-                    currentFrame = (currentFrame + 1) % frameCount;
-                    lastFrameTime = timestamp;
+                const framesPerRow = Math.floor(totalImageWidth / frameWidth);
+                const totalRows = Math.ceil(frameCount / framesPerRow);
+
+                console.log(`🧩 Frames pro Zeile: ${framesPerRow}, Gesamtzeilen: ${totalRows}`);
+
+                // **Canvas für animierte Sprites**
+                const canvas = document.createElement("canvas");
+                canvas.width = frameWidth;
+                canvas.height = frameHeight;
+                document.getElementById("ugc-container").appendChild(canvas);
+
+                const ctx = canvas.getContext("2d");
+
+                let currentFrame = 0;
+                let lastFrameTime = performance.now();
+
+                function animateSprite(timestamp) {
+                    const delta = timestamp - lastFrameTime;
+
+                    if (delta >= 1000 / frameRate) {
+                        ctx.clearRect(0, 0, frameWidth, frameHeight);
+
+                        // Berechnung von Zeile & Spalte
+                        const row = Math.floor(currentFrame / framesPerRow);
+                        const col = currentFrame % framesPerRow;
+
+                        const sx = col * frameWidth;
+                        const sy = row * frameHeight;
+
+                        ctx.drawImage(spriteImage, sx, sy, frameWidth, frameHeight, 0, 0, frameWidth, frameHeight);
+                        currentFrame = (currentFrame + 1) % frameCount;
+                        lastFrameTime = timestamp;
+                    }
+
+                    requestAnimationFrame(animateSprite);
                 }
 
-                requestAnimationFrame(animateSprite);
-            }
-
-            spriteImage.onload = function () {
                 requestAnimationFrame(animateSprite);
             };
 
