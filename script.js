@@ -11,41 +11,43 @@ document.addEventListener("DOMContentLoaded", async function () {
     console.log("🔍 Gesuchte UGC-ID:", ugcId);
 
     try {
+        // JSON-Datei laden
         const response = await fetch("https://raw.githubusercontent.com/Shambhala222/pixelsugcviewer/main/ugc.json");
         const ugcData = await response.json();
+        
+        console.log("✅ JSON geladen, Hauptkategorien:", Object.keys(ugcData));
 
-        console.log("✅ JSON geladen, Gesamtanzahl UGCs:", Object.keys(ugcData).length);
-
-        // **Alle verfügbaren Keys anzeigen**
-        console.log("🔎 JSON enthält folgende Haupt-Keys:", Object.keys(ugcData));
-
-        // **itm_ugc suchen**
-        const itmKey = `itm_ugc-${ugcId}`;
-        console.log("🔎 Suche nach itm_ugc:", itmKey);
-        const itmEntry = ugcData[itmKey];
-
-        if (!itmEntry) {
-            console.error(`❌ itm_ugc nicht gefunden: ${itmKey}`);
-            console.log("🔍 Verfügbare itm_ugc Keys:", Object.keys(ugcData).filter(key => key.startsWith("itm_ugc")));
-            document.getElementById("ugc-container").innerHTML = "<p>Kein passendes itm_ugc gefunden.</p>";
+        // Prüfen, ob `items` und `objects` existieren
+        if (!ugcData.items || !ugcData.objects) {
+            console.error("❌ Die JSON enthält keine gültigen 'items' oder 'objects'.");
+            document.getElementById("ugc-container").innerHTML = "<p>Fehlerhafte JSON-Struktur.</p>";
             return;
         }
 
-        console.log("✅ itm_ugc gefunden:", itmEntry);
+        // UGC-Keys definieren
+        const itmKey = `itm_ugc-${ugcId}`;
+        const objKey = `obj_ugc-${ugcId}`;
 
-        // **obj_ugc suchen**
-        const objKey = itmEntry.onUse?.placeObject || "";
-        console.log("🔎 Suche nach obj_ugc:", objKey);
-        const objEntry = ugcData[objKey];
+        console.log("🔎 Suche in items nach:", itmKey);
+        console.log("🔎 Suche in objects nach:", objKey);
 
-        if (!objEntry) {
-            console.warn(`⚠️ obj_ugc nicht gefunden für ${objKey}, es könnte statisch sein.`);
-        } else {
-            console.log("✅ obj_ugc gefunden:", objEntry);
+        // `itm_ugc` in `items` suchen
+        const itmEntry = ugcData.items[itmKey];
+        if (!itmEntry) {
+            console.error(`❌ ${itmKey} nicht in items gefunden.`);
+            console.log("🔍 Verfügbare itm_ugc Keys:", Object.keys(ugcData.items).slice(0, 10)); // Zeigt die ersten 10 Einträge
+            document.getElementById("ugc-container").innerHTML = "<p>Kein UGC gefunden.</p>";
+            return;
         }
 
-        // **Bild-URL ermitteln**
-        let spriteUrl = objEntry?.sprite?.image || itmEntry?.image;
+        // `obj_ugc` aus `placeObject` extrahieren, falls vorhanden
+        let objEntry = null;
+        if (itmEntry.onUse && itmEntry.onUse.placeObject) {
+            objEntry = ugcData.objects[itmEntry.onUse.placeObject];
+        }
+
+        // **Bild-URL herausfinden**
+        let spriteUrl = objEntry?.sprite?.image || itmEntry.image;
         if (!spriteUrl) {
             console.error("❌ Kein Bild gefunden für dieses UGC.");
             document.getElementById("ugc-container").innerHTML = "<p>Fehler: Kein Bild gefunden.</p>";
@@ -56,7 +58,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             spriteUrl = "https:" + spriteUrl;
         }
 
-        // **Animationseigenschaften**
+        // **Überprüfen, ob UGC animiert ist oder nicht**
         const isSpritesheet = objEntry?.sprite?.isSpritesheet || false;
         const frameCount = objEntry?.sprite?.frames || 1; 
         const frameRate = objEntry?.sprite?.frameRate || 1;
@@ -69,7 +71,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         console.log("⏳ Framerate:", frameRate, "FPS");
         console.log("🖼 Ist ein SpriteSheet?", isSpritesheet);
 
-        // **Canvas erzeugen**
+        // **Container für das Bild erzeugen**
         const canvas = document.createElement("canvas");
         canvas.width = frameWidth;
         canvas.height = frameHeight;
@@ -80,6 +82,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         spriteImage.src = spriteUrl;
 
         if (isSpritesheet) {
+            // **Falls das UGC animiert ist, abspielen**
             let currentFrame = 0;
             function animateSprite() {
                 ctx.clearRect(0, 0, frameWidth, frameHeight);
@@ -91,6 +94,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 setInterval(animateSprite, 1000 / frameRate);
             };
         } else {
+            // **Falls das UGC nicht animiert ist, einfach anzeigen**
             spriteImage.onload = function () {
                 ctx.drawImage(spriteImage, 0, 0, frameWidth, frameHeight);
                 document.getElementById("ugc-container").innerHTML += "<p>Dieses UGC ist nicht animiert.</p>";
