@@ -70,8 +70,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (isSpritesheet) {
             console.log("✅ Animation erkannt!");
 
-            const frameCount = objEntry?.sprite?.frames 
-            const frameRate = objEntry?.sprite?.frameRate
+            const frameCount = objEntry?.sprite?.frames || 1; 
+            const frameRate = objEntry?.sprite?.frameRate || 1;
             const frameWidth = objEntry?.sprite?.size?.width;
             const frameHeight = objEntry?.sprite?.size?.height;
 
@@ -106,8 +106,9 @@ document.addEventListener("DOMContentLoaded", async function () {
             // **Direkt ein `<img>`-Tag verwenden für statische Bilder**
             const imgElement = document.createElement("img");
             imgElement.src = imageUrl;
-            imgElement.style.display = "block"; // Zentriert das Bild
-            imgElement.style.margin = "0 auto"; // Zentriert das Bild
+            imgElement.style.display = "block"; // Bild wird mittig zentriert
+            imgElement.style.margin = "0 auto"; // Zentriert es horizontal
+            imgElement.style.border = "1px solid black"; // Kleiner Rahmen für besseren Look
             document.getElementById("ugc-container").appendChild(imgElement);
         }
 
