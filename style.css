@@ -35,7 +35,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: url('displaybackground.png'); /* Stelle sicher, dass das Bild im richtigen Verzeichnis ist */
+    background-image: url('DisplayBackground.png'); /* Stelle sicher, dass das Bild im richtigen Verzeichnis ist */
     background-size: cover;
     background-position: center;
     border-radius: 10px;
