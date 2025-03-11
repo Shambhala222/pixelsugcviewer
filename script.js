@@ -87,3 +87,31 @@ document.addEventListener("DOMContentLoaded", async function () {
         document.getElementById("ugc-container").innerHTML = "<p>Fehler beim Laden der Daten.</p>";
     }
 });
+
+// **Drag & Drop Funktion**
+function enableDragAndDrop() {
+    const container = document.getElementById("ugc-container");
+    let offsetX, offsetY, isDragging = false;
+
+    container.style.position = "absolute";
+    container.style.cursor = "grab";
+    container.style.userSelect = "none";
+
+    container.addEventListener("mousedown", function (e) {
+        isDragging = true;
+        offsetX = e.clientX - container.getBoundingClientRect().left;
+        offsetY = e.clientY - container.getBoundingClientRect().top;
+        container.style.cursor = "grabbing";
+    });
+
+    document.addEventListener("mousemove", function (e) {
+        if (!isDragging) return;
+        container.style.left = `${e.clientX - offsetX}px`;
+        container.style.top = `${e.clientY - offsetY}px`;
+    });
+
+    document.addEventListener("mouseup", function () {
+        isDragging = false;
+        container.style.cursor = "grab";
+    });
+}
