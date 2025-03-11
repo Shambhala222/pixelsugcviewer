@@ -92,13 +92,15 @@ document.addEventListener("DOMContentLoaded", async function () {
             container.style.cursor = "grab";
         });
 
+        const scaleFactor = 1.333; // Standard-Skalierung, kann angepasst werden
+
         if (isSpritesheet) {
             console.log("✅ Animation erkannt!");
             
             let frameCount = objEntry?.sprite?.frames || 1;
             const frameRate = objEntry?.sprite?.frameRate || 1;
-            const frameWidth = objEntry?.sprite?.size?.width;
-            const frameHeight = objEntry?.sprite?.size?.height;
+            const frameWidth = objEntry?.sprite?.size?.width * scaleFactor;
+            const frameHeight = objEntry?.sprite?.size?.height * scaleFactor;
             
             console.log(`🖼 Frame-Größe: ${frameWidth} x ${frameHeight}`);
             console.log(`🎞 Frames (aus JSON): ${frameCount}`);
@@ -118,11 +120,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                 const totalImageHeight = spriteImage.height;
                 console.log(`📏 Gesamte Bildgröße: ${totalImageWidth} x ${totalImageHeight}`);
                 
-                const framesPerRow = Math.floor(totalImageWidth / frameWidth);
-                const totalRows = Math.floor(totalImageHeight / frameHeight);
-                const totalFramesCalculated = framesPerRow * totalRows;
-                
-                console.log(`📊 Berechnete Frames: ${totalFramesCalculated} (Erwartet: ${frameCount})`);
+                const framesPerRow = Math.floor(totalImageWidth / (frameWidth / scaleFactor));
+                const totalRows = Math.floor(totalImageHeight / (frameHeight / scaleFactor));
                 
                 let currentFrame = 0;
                 let lastFrameTime = performance.now();
@@ -133,9 +132,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                         ctx.clearRect(0, 0, frameWidth, frameHeight);
                         const col = currentFrame % framesPerRow;
                         const row = Math.floor(currentFrame / framesPerRow);
-                        const sx = col * frameWidth;
-                        const sy = row * frameHeight;
-                        ctx.drawImage(spriteImage, sx, sy, frameWidth, frameHeight, 0, 0, frameWidth, frameHeight);
+                        const sx = col * (frameWidth / scaleFactor);
+                        const sy = row * (frameHeight / scaleFactor);
+                        ctx.drawImage(spriteImage, sx, sy, frameWidth / scaleFactor, frameHeight / scaleFactor, 0, 0, frameWidth, frameHeight);
                         currentFrame = (currentFrame + 1) % frameCount;
                         lastFrameTime = timestamp;
                     }
@@ -147,6 +146,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             console.log("🖼 Statisches Bild erkannt!");
             const imgElement = document.createElement("img");
             imgElement.src = imageUrl;
+            imgElement.style.width = `${100 * scaleFactor}%`;
+            imgElement.style.height = "auto";
             imgElement.style.display = "block";
             imgElement.style.margin = "0 auto";
             imgElement.style.border = "1px solid black";
