@@ -71,13 +71,19 @@ document.addEventListener("DOMContentLoaded", async function () {
             console.log("✅ Animation erkannt!");
 
             const frameCount = objEntry?.sprite?.frames || 1; 
-            const frameRate = objEntry?.sprite?.frameRate || 1;
+            let frameRate = objEntry?.sprite?.frameRate || 1;
             const frameWidth = objEntry?.sprite?.size?.width;
             const frameHeight = objEntry?.sprite?.size?.height;
 
             console.log(`🖼 Frame-Größe: ${frameWidth} x ${frameHeight}`);
             console.log(`🎞 Frames: ${frameCount}`);
             console.log(`⏳ Framerate: ${frameRate} FPS`);
+
+            // **Loop-Anpassung: Wenn die Framerate nicht exakt passt**
+            if (frameRate % frameCount !== 0) {
+                frameRate = Math.ceil(frameCount / frameRate) * frameRate; // Korrigierte Framerate für flüssige Loops
+                console.log(`⚡ Korrigierte Framerate für besseren Loop: ${frameRate} FPS`);
+            }
 
             // **Canvas für animierte Sprites**
             const canvas = document.createElement("canvas");
@@ -90,18 +96,16 @@ document.addEventListener("DOMContentLoaded", async function () {
             spriteImage.src = imageUrl;
 
             let currentFrame = 0;
-            let lastTime = 0;
-            let frameInterval = 1000 / frameRate; // Berechnet Zeit pro Frame
+            let lastFrameTime = performance.now();
 
             function animateSprite(timestamp) {
-                if (!lastTime) lastTime = timestamp;
-                let deltaTime = timestamp - lastTime;
+                const delta = timestamp - lastFrameTime;
 
-                if (deltaTime >= frameInterval) {
+                if (delta >= 1000 / frameRate) {
                     ctx.clearRect(0, 0, frameWidth, frameHeight);
                     ctx.drawImage(spriteImage, currentFrame * frameWidth, 0, frameWidth, frameHeight, 0, 0, frameWidth, frameHeight);
-                    currentFrame = (currentFrame + 1) % frameCount; // **Modulo, damit Loop flüssig bleibt**
-                    lastTime = timestamp;
+                    currentFrame = (currentFrame + 1) % frameCount;
+                    lastFrameTime = timestamp;
                 }
 
                 requestAnimationFrame(animateSprite);
