@@ -12,17 +12,17 @@ h1 {
 }
 
 #ugc-container {
+    width: 150px; /* Größe des Fensters anpassen */
+    height: 150px; /* Höhe anpassen */
     display: flex;
-    align-items: center;
     justify-content: center;
-    background: url('displaybackground.png') no-repeat center center;
-    background-size: cover;
-    width: 300px;
-    height: 300px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    margin: 20px auto;
-    padding: 10px;
+    align-items: center;
+    background-image: url('displaybackground.png'); /* Hintergrundbild */
+    background-size: cover; /* Das Bild soll den gesamten Bereich abdecken */
+    background-position: center; /* Bild mittig ausrichten */
+    background-repeat: no-repeat; /* Verhindert Wiederholung */
+    border-radius: 10px; /* Falls du abgerundete Ecken möchtest */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional: Schattierung für schöneren Look */
 }
 
 canvas {
