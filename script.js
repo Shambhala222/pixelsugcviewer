@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         if (!itmEntry.onUse || !itmEntry.onUse.placeObject) {
             console.error("❌ Keine placeObject-Verknüpfung für dieses itm_ugc.");
-            document.getElementById("ugc-container").innerHTML = "<p>Kein animiertes UGC gefunden.</p>";
+            document.getElementById("ugc-container").innerHTML = "<p>Kein verknüpftes Objekt gefunden.</p>";
             return;
         }
 
@@ -49,6 +49,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             return;
         }
 
+        // Prüfen, ob das UGC animiert ist oder nicht
         const isSpritesheet = objEntry?.sprite?.isSpritesheet || false;
         let imageUrl = objEntry?.sprite?.image || "";
 
@@ -90,6 +91,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             spriteImage.src = imageUrl;
 
             let currentFrame = 0;
+
             function animateSprite() {
                 ctx.clearRect(0, 0, frameWidth, frameHeight);
                 ctx.drawImage(spriteImage, currentFrame * frameWidth, 0, frameWidth, frameHeight, 0, 0, frameWidth, frameHeight);
@@ -97,7 +99,11 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
 
             spriteImage.onload = function () {
-                setInterval(animateSprite, 1000 / frameRate);
+                console.log("🎬 Starte Animation...");
+                requestAnimationFrame(function loop() {
+                    animateSprite();
+                    setTimeout(() => requestAnimationFrame(loop), 1000 / frameRate);
+                });
             };
 
         } else {
