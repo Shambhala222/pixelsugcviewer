@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         document.getElementById("ugc-container").innerHTML = "";
 
         // **Skalierungsfaktor setzen (Vergrößern/Verkleinern)**
-        let scaleFactor = 1.333; // 🔥 Hier kannst du den Skalierungsfaktor ändern
+        let scaleFactor = 1.5; // 🔥 Hier kannst du den Skalierungsfaktor ändern
 
         if (isSpritesheet) {
             console.log("✅ Animation erkannt!");
@@ -120,13 +120,18 @@ document.addEventListener("DOMContentLoaded", async function () {
                     const delta = timestamp - lastFrameTime;
 
                     if (delta >= 1000 / frameRate) {
-                        ctx.clearRect(0, 0, frameWidth, frameHeight);
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
                         // **Fix: Frames wirklich nur in einer Zeile berechnen**
                         const col = currentFrame % framesPerRow;
                         const sx = col * frameWidth;
 
-                        ctx.drawImage(spriteImage, sx, 0, frameWidth, frameHeight, 0, 0, frameWidth, frameHeight);
+                        ctx.drawImage(
+                            spriteImage, 
+                            sx, 0, frameWidth, frameHeight, 
+                            0, 0, frameWidth * scaleFactor, frameHeight * scaleFactor
+                        );
+
                         currentFrame = (currentFrame + 1) % frameCount;
                         lastFrameTime = timestamp;
                     }
@@ -143,11 +148,11 @@ document.addEventListener("DOMContentLoaded", async function () {
             // **Direkt ein `<img>`-Tag verwenden für statische Bilder**
             const imgElement = document.createElement("img");
             imgElement.src = imageUrl;
-            imgElement.style.transform = `scale(${scaleFactor})`;
             imgElement.style.display = "block";
             imgElement.style.margin = "0 auto";
             imgElement.style.border = "none";
             imgElement.style.backgroundColor = "transparent";
+            imgElement.style.transform = `scale(${scaleFactor})`; // 🔥 Skalierungsfaktor für statische Bilder
             document.getElementById("ugc-container").appendChild(imgElement);
         }
 
