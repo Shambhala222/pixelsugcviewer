@@ -11,7 +11,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     console.log("🔍 Gesuchte UGC-ID:", ugcId);
 
     try {
-        // JSON laden
         const response = await fetch("https://raw.githubusercontent.com/Shambhala222/pixelsugcviewer/main/ugc.json");
         const ugcData = await response.json();
         
@@ -65,87 +64,87 @@ document.addEventListener("DOMContentLoaded", async function () {
         console.log(`🎨 Image-URL: ${imageUrl}`);
 
         // **Container leeren**
-        document.getElementById("ugc-container").innerHTML = "";
+        const container = document.getElementById("ugc-container");
+        container.innerHTML = "";
+
+        // **Drag & Drop-Funktionalität hinzufügen**
+        container.style.position = "absolute";
+        container.style.cursor = "grab";
+
+        let offsetX, offsetY, isDragging = false;
+
+        container.addEventListener("mousedown", (e) => {
+            isDragging = true;
+            offsetX = e.clientX - container.getBoundingClientRect().left;
+            offsetY = e.clientY - container.getBoundingClientRect().top;
+            container.style.cursor = "grabbing";
+        });
+
+        document.addEventListener("mousemove", (e) => {
+            if (isDragging) {
+                container.style.left = `${e.clientX - offsetX}px`;
+                container.style.top = `${e.clientY - offsetY}px`;
+            }
+        });
+
+        document.addEventListener("mouseup", () => {
+            isDragging = false;
+            container.style.cursor = "grab";
+        });
 
         if (isSpritesheet) {
             console.log("✅ Animation erkannt!");
-
-            let frameCount = objEntry?.sprite?.frames || 1; 
+            
+            let frameCount = objEntry?.sprite?.frames || 1;
             const frameRate = objEntry?.sprite?.frameRate || 1;
             const frameWidth = objEntry?.sprite?.size?.width;
             const frameHeight = objEntry?.sprite?.size?.height;
-
+            
             console.log(`🖼 Frame-Größe: ${frameWidth} x ${frameHeight}`);
             console.log(`🎞 Frames (aus JSON): ${frameCount}`);
             console.log(`⏳ Framerate: ${frameRate} FPS`);
-
-            // **Canvas für animierte Sprites**
+            
             const canvas = document.createElement("canvas");
             canvas.width = frameWidth;
             canvas.height = frameHeight;
-            document.getElementById("ugc-container").appendChild(canvas);
-
+            container.appendChild(canvas);
+            
             const ctx = canvas.getContext("2d");
             const spriteImage = new Image();
             spriteImage.src = imageUrl;
-
+            
             spriteImage.onload = function () {
                 const totalImageWidth = spriteImage.width;
                 const totalImageHeight = spriteImage.height;
-
                 console.log(`📏 Gesamte Bildgröße: ${totalImageWidth} x ${totalImageHeight}`);
-
+                
                 const framesPerRow = Math.floor(totalImageWidth / frameWidth);
-                let totalRows = Math.ceil(frameCount / framesPerRow);
-
-                // **Fix: Falls das Bild nur eine Zeile hat, setzen wir totalRows = 1**
-                if (totalImageHeight === frameHeight || totalRows === 1) {
-                    totalRows = 1;
-                }
-
-                // **Korrektur: Frames per Row manuell berechnen, falls der Wert falsch ist**
-                const calculatedFrames = framesPerRow * totalRows;
-                if (calculatedFrames < frameCount) {
-                    console.warn(`⚠️ Fehlerhafte Frames erkannt! JSON sagt ${frameCount}, Bild hat aber nur ${calculatedFrames}.`);
-                    frameCount = calculatedFrames;
-                }
-
                 let currentFrame = 0;
                 let lastFrameTime = performance.now();
-
+                
                 function animateSprite(timestamp) {
                     const delta = timestamp - lastFrameTime;
-
                     if (delta >= 1000 / frameRate) {
                         ctx.clearRect(0, 0, frameWidth, frameHeight);
-
-                        // **Fix: Frames wirklich nur in einer Zeile berechnen**
                         const col = currentFrame % framesPerRow;
                         const sx = col * frameWidth;
-
                         ctx.drawImage(spriteImage, sx, 0, frameWidth, frameHeight, 0, 0, frameWidth, frameHeight);
                         currentFrame = (currentFrame + 1) % frameCount;
                         lastFrameTime = timestamp;
                     }
-
                     requestAnimationFrame(animateSprite);
                 }
-
                 requestAnimationFrame(animateSprite);
             };
-
         } else {
             console.log("🖼 Statisches Bild erkannt!");
-
-            // **Direkt ein `<img>`-Tag verwenden für statische Bilder**
             const imgElement = document.createElement("img");
             imgElement.src = imageUrl;
             imgElement.style.display = "block";
             imgElement.style.margin = "0 auto";
             imgElement.style.border = "1px solid black";
-            document.getElementById("ugc-container").appendChild(imgElement);
+            container.appendChild(imgElement);
         }
-
     } catch (error) {
         console.error("❌ Fehler beim Laden der UGC JSON:", error);
         document.getElementById("ugc-container").innerHTML = "<p>Fehler beim Laden der Daten.</p>";
