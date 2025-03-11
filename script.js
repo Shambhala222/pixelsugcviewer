@@ -10,21 +10,17 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     console.log("🔍 Gesuchte UGC-ID:", ugcId);
 
-    // Stelle sicher, dass das Minus korrekt gesetzt bleibt
-    const itmKey = `itm_ugc${ugcId}`;  
-    const objKey = `obj_ugc${ugcId}`;  
-
-    console.log("🔎 Suche nach itm_ugc:", itmKey);
-    console.log("🔎 Suche nach obj_ugc:", objKey);
-
     try {
-        // 1️⃣ JSON-Datei abrufen
+        // Lade die UGC JSON von GitHub
         const response = await fetch("https://raw.githubusercontent.com/Shambhala222/pixelsugcviewer/main/ugc.json");
         const ugcData = await response.json();
         
         console.log("✅ JSON geladen, Gesamtanzahl UGCs:", Object.keys(ugcData).length);
 
-        // 2️⃣ Suche nach itm_ugc
+        // 1️⃣ ITM-UGC suchen
+        const itmKey = `itm_ugc-${ugcId}`;
+        console.log("🔎 Suche nach itm_ugc:", itmKey);
+
         const itmEntry = ugcData[itmKey];
         if (!itmEntry || !itmEntry.onUse || !itmEntry.onUse.placeObject) {
             console.error("❌ itm_ugc nicht gefunden oder keine placeObject-Verknüpfung.");
@@ -32,10 +28,22 @@ document.addEventListener("DOMContentLoaded", async function () {
             return;
         }
 
-        // 3️⃣ Suche nach obj_ugc
-        const objEntry = ugcData[objKey];
+        // 2️⃣ OBJ-UGC suchen
+        const objKey = itmEntry.onUse.placeObject;
+        console.log("🔎 Suche nach obj_ugc:", objKey);
+
+        // Prüfen, ob "objects" existiert
+        if (!ugcData.objects) {
+            console.error("❌ Keine 'objects'-Sektion in der JSON gefunden.");
+            document.getElementById("ugc-container").innerHTML = "<p>Daten fehlerhaft.</p>";
+            return;
+        }
+
+        // Im "objects"-Block nach obj_ugc suchen
+        const objEntry = ugcData["objects"][objKey];
         if (!objEntry) {
             console.error("❌ obj_ugc nicht gefunden:", objKey);
+            console.log("🔎 Alle verfügbaren obj_ugc Keys:", Object.keys(ugcData["objects"])); // Debugging
             document.getElementById("ugc-container").innerHTML = "<p>Dieses UGC hat keine Animation.</p>";
             return;
         }
@@ -46,10 +54,10 @@ document.addEventListener("DOMContentLoaded", async function () {
             return;
         }
 
-        // 4️⃣ Extrahiere die richtigen Werte
+        // 3️⃣ Animation laden
         let spriteUrl = objEntry.sprite.image;
         if (spriteUrl.startsWith("//")) {
-            spriteUrl = "https:" + spriteUrl;
+            spriteUrl = "https:" + spriteUrl; // Korrektur der URL
         }
 
         const frameCount = objEntry.sprite.frames;
@@ -63,7 +71,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         console.log("🎞 Frames:", frameCount);
         console.log("⏳ Framerate:", frameRate, "FPS");
 
-        // 5️⃣ Canvas-Element erstellen
+        // 4️⃣ Canvas erstellen für Animation
         const canvas = document.createElement("canvas");
         canvas.width = frameWidth;
         canvas.height = frameHeight;
