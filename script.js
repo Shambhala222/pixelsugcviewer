@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         // 🚨 WICHTIG: Immer sicherstellen, dass `itm_ugc-` und `obj_ugc-` korrekt sind!
         const itmKey = `itm_ugc-${ugcId}`;  // Immer mit dem festen Minus
-        console.log("🔎 Vergleich mit Keys in JSON:", Object.keys(ugcData).filter(k => k.includes("itm_ugc")));
+        console.log("🔎 Vergleich mit Keys in JSON:", Object.keys(ugcData).filter(k => k.includes("itm_ugc-")));
         const objKey = `obj_ugc-${ugcId}`;  // Immer mit dem festen Minus
 
         console.log("🔎 Suche nach itm_ugc:", itmKey);
