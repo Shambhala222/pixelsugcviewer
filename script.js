@@ -70,16 +70,15 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (isSpritesheet) {
             console.log("✅ Animation erkannt!");
 
-            const frameCount = objEntry?.sprite?.frames || 1; 
+            let frameCount = objEntry?.sprite?.frames || 1; 
             let frameRate = objEntry?.sprite?.frameRate || 1;
             const frameWidth = objEntry?.sprite?.size?.width;
             const frameHeight = objEntry?.sprite?.size?.height;
 
             console.log(`🖼 Frame-Größe: ${frameWidth} x ${frameHeight}`);
-            console.log(`🎞 Frames: ${frameCount}`);
+            console.log(`🎞 Frames (aus JSON): ${frameCount}`);
             console.log(`⏳ Framerate: ${frameRate} FPS`);
 
-            // **Hier kommt die neue Logik für Reihen & Spalten**
             const spriteImage = new Image();
             spriteImage.src = imageUrl;
 
@@ -91,8 +90,16 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 const framesPerRow = Math.floor(totalImageWidth / frameWidth);
                 const totalRows = Math.ceil(frameCount / framesPerRow);
+                const calculatedFrames = framesPerRow * totalRows;
 
                 console.log(`🧩 Frames pro Zeile: ${framesPerRow}, Gesamtzeilen: ${totalRows}`);
+                console.log(`🔍 Berechnete Frames: ${calculatedFrames} (tatsächlich im Bild)`);
+
+                // **Fehlerhafte Frames aus JSON korrigieren**
+                if (calculatedFrames < frameCount) {
+                    console.warn(`⚠️ Fehlerhafte Frames gefunden! JSON sagt ${frameCount}, aber Bild hat nur ${calculatedFrames}.`);
+                    frameCount = calculatedFrames;
+                }
 
                 // **Canvas für animierte Sprites**
                 const canvas = document.createElement("canvas");
