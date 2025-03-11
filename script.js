@@ -8,8 +8,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     // Falls die ID mit "-" beginnt, bleibt sie so erhalten
-    const itmKey = `itm_ugc${ugcId}`;
-    const objKey = `obj_ugc${ugcId}`;
+    const itmKey = `itm_ugc-${ugcId}`;
+    const objKey = `obj_ugc-${ugcId}`;
 
     try {
         // 🔹 JSON-Daten von GitHub abrufen
