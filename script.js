@@ -67,8 +67,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         // **Breite & Höhe für NICHT animierte UGCs aus `physics.size`**
         if (!isSpritesheet) {
-            frameWidth = objEntry?.physics?.size?.width; // Falls undefined → Standardwert
-            frameHeight = objEntry?.physics?.size?.height;
+            frameWidth = objEntry?.physics?.size?.width ?? 80; // Falls undefined → Standardwert
+            frameHeight = objEntry?.physics?.size?.height ?? 80;
         }
 
         let imageUrl = objEntry?.sprite?.image || "";
