@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             document.getElementById("ugc-container").innerHTML = "<p>Kein animiertes UGC gefunden.</p>";
             return;
         }
-        const itmEntry = ugcData[itmKey];
+        const itmEntry = ugcData.items ? ugcData.items[itmKey] : undefined;
 
         if (!itmEntry.onUse || !itmEntry.onUse.placeObject) {
             console.error(`❌ itm_ugc hat keine placeObject-Verknüpfung: ${itmKey}`);
@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             document.getElementById("ugc-container").innerHTML = "<p>Dieses UGC hat keine Animation.</p>";
             return;
         }
-        const objEntry = ugcData[objKey];
+        const objEntry = ugcData.objects ? ugcData.objects[objKey] : undefined;
 
         if (!objEntry.sprite || !objEntry.sprite.isSpritesheet) {
             console.error("❌ Kein Sprite-Sheet vorhanden.");
