@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             console.log("✅ Animation erkannt!");
 
             let frameCount = objEntry?.sprite?.frames || 1; 
-            let frameRate = objEntry?.sprite?.frameRate || 1;
+            const frameRate = objEntry?.sprite?.frameRate || 1;
             const frameWidth = objEntry?.sprite?.size?.width;
             const frameHeight = objEntry?.sprite?.size?.height;
 
@@ -79,6 +79,13 @@ document.addEventListener("DOMContentLoaded", async function () {
             console.log(`🎞 Frames (aus JSON): ${frameCount}`);
             console.log(`⏳ Framerate: ${frameRate} FPS`);
 
+            // **Canvas für animierte Sprites**
+            const canvas = document.createElement("canvas");
+            canvas.width = frameWidth;
+            canvas.height = frameHeight;
+            document.getElementById("ugc-container").appendChild(canvas);
+
+            const ctx = canvas.getContext("2d");
             const spriteImage = new Image();
             spriteImage.src = imageUrl;
 
@@ -89,7 +96,13 @@ document.addEventListener("DOMContentLoaded", async function () {
                 console.log(`📏 Gesamte Bildgröße: ${totalImageWidth} x ${totalImageHeight}`);
 
                 const framesPerRow = Math.floor(totalImageWidth / frameWidth);
-                const totalRows = Math.ceil(frameCount / framesPerRow);
+                let totalRows = Math.ceil(frameCount / framesPerRow);
+
+                // **Fix: Falls das Bild nur eine Zeile hat, setzen wir totalRows = 1**
+                if (totalImageHeight === frameHeight) {
+                    totalRows = 1;
+                }
+
                 const calculatedFrames = framesPerRow * totalRows;
 
                 console.log(`🧩 Frames pro Zeile: ${framesPerRow}, Gesamtzeilen: ${totalRows}`);
@@ -100,14 +113,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                     console.warn(`⚠️ Fehlerhafte Frames gefunden! JSON sagt ${frameCount}, aber Bild hat nur ${calculatedFrames}.`);
                     frameCount = calculatedFrames;
                 }
-
-                // **Canvas für animierte Sprites**
-                const canvas = document.createElement("canvas");
-                canvas.width = frameWidth;
-                canvas.height = frameHeight;
-                document.getElementById("ugc-container").appendChild(canvas);
-
-                const ctx = canvas.getContext("2d");
 
                 let currentFrame = 0;
                 let lastFrameTime = performance.now();
@@ -142,9 +147,9 @@ document.addEventListener("DOMContentLoaded", async function () {
             // **Direkt ein `<img>`-Tag verwenden für statische Bilder**
             const imgElement = document.createElement("img");
             imgElement.src = imageUrl;
-            imgElement.style.display = "block"; // Bild wird mittig zentriert
-            imgElement.style.margin = "0 auto"; // Zentriert es horizontal
-            imgElement.style.border = "1px solid black"; // Kleiner Rahmen für besseren Look
+            imgElement.style.display = "block";
+            imgElement.style.margin = "0 auto";
+            imgElement.style.border = "1px solid black";
             document.getElementById("ugc-container").appendChild(imgElement);
         }
 
