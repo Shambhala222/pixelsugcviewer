@@ -9,9 +9,11 @@ body {
     align-items: center;
     justify-content: center;
     height: 100vh;
-    background-image: url("landbackground.png"); /* Hintergrundbild laden */
-    background-repeat: no-repeat; /* Kein Wiederholen */
-    background-attachment: fixed; /* Fixiertes Hintergrundbild */
+    background-image: url("landbackground.png"); /* HINTERGRUNDBILD LADEN */
+    background-size: cover; /* Bild skaliert auf Bildschirmgröße */
+    background-position: center; /* Bild bleibt zentriert */
+    background-repeat: no-repeat; /* Kein Wiederholen des Bildes */
+    background-attachment: fixed; /* Hintergrund bleibt fixiert */
 }
 
 /* Styling für den Container, in dem das UGC angezeigt wird */
