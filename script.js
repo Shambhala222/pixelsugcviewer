@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         // JSON laden
         const response = await fetch("https://raw.githubusercontent.com/Shambhala222/pixelsugcviewer/main/ugc.json");
         const ugcData = await response.json();
-        
+
         console.log("✅ JSON geladen, Hauptkategorien:", Object.keys(ugcData));
 
         if (!ugcData.items || !ugcData.objects) {
@@ -67,13 +67,13 @@ document.addEventListener("DOMContentLoaded", async function () {
         // **Container leeren**
         document.getElementById("ugc-container").innerHTML = "";
 
-        // **Skalierungsfaktor setzen**
-        let scaleFactor = 1.4; // 🔥 Ändere diesen Wert, um das Bild zu vergrößern/verkleinern
+        // **Skalierungsfaktor setzen (Vergrößern/Verkleinern)**
+        let scaleFactor = 1.4; // 🔥 Hier kannst du den Skalierungsfaktor ändern
 
         if (isSpritesheet) {
             console.log("✅ Animation erkannt!");
 
-            let frameCount = objEntry?.sprite?.frames || 1; 
+            let frameCount = objEntry?.sprite?.frames || 1;
             const frameRate = objEntry?.sprite?.frameRate || 1;
             const frameWidth = objEntry?.sprite?.size?.width;
             const frameHeight = objEntry?.sprite?.size?.height;
@@ -93,46 +93,14 @@ document.addEventListener("DOMContentLoaded", async function () {
             spriteImage.src = imageUrl;
 
             spriteImage.onload = function () {
-                const totalImageWidth = spriteImage.width;
-                const totalImageHeight = spriteImage.height;
-
-                console.log(`📏 Gesamte Bildgröße: ${totalImageWidth} x ${totalImageHeight}`);
-
-                const framesPerRow = Math.floor(totalImageWidth / frameWidth);
-                let totalRows = Math.ceil(frameCount / framesPerRow);
-
-                if (totalImageHeight === frameHeight || totalRows === 1) {
-                    totalRows = 1;
-                }
-
-                const calculatedFrames = framesPerRow * totalRows;
-                if (calculatedFrames < frameCount) {
-                    console.warn(`⚠️ Fehlerhafte Frames erkannt! JSON sagt ${frameCount}, Bild hat aber nur ${calculatedFrames}.`);
-                    frameCount = calculatedFrames;
-                }
-
                 let currentFrame = 0;
-                let lastFrameTime = performance.now();
-
-                function animateSprite(timestamp) {
-                    const delta = timestamp - lastFrameTime;
-
-                    if (delta >= 1000 / frameRate) {
-                        ctx.clearRect(0, 0, frameWidth * scaleFactor, frameHeight * scaleFactor);
-
-                        const col = currentFrame % framesPerRow;
-                        const sx = col * frameWidth;
-
-                        ctx.drawImage(spriteImage, sx, 0, frameWidth, frameHeight, 
-                            0, 0, frameWidth * scaleFactor, frameHeight * scaleFactor);
-                        currentFrame = (currentFrame + 1) % frameCount;
-                        lastFrameTime = timestamp;
-                    }
-
-                    requestAnimationFrame(animateSprite);
+                function animateSprite() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(spriteImage, currentFrame * frameWidth, 0, frameWidth, frameHeight,
+                        0, 0, canvas.width, canvas.height);
+                    currentFrame = (currentFrame + 1) % frameCount;
                 }
-
-                requestAnimationFrame(animateSprite);
+                setInterval(animateSprite, 1000 / frameRate);
             };
 
         } else {
@@ -141,16 +109,15 @@ document.addEventListener("DOMContentLoaded", async function () {
             // **Direkt ein `<img>`-Tag verwenden für statische Bilder**
             const imgElement = document.createElement("img");
             imgElement.src = imageUrl;
+            imgElement.style.transform = `scale(${scaleFactor})`;
             imgElement.style.display = "block";
             imgElement.style.margin = "0 auto";
-            imgElement.style.border = "1px solid black";
-            imgElement.style.width = "auto";
-            imgElement.style.height = "auto";
-            imgElement.style.transform = `scale(${scaleFactor})`; // **Skalierung für statische Bilder**
+            imgElement.style.border = "none";
+            imgElement.style.backgroundColor = "transparent";
             document.getElementById("ugc-container").appendChild(imgElement);
         }
 
-        // **DRAG & DROP FUNKTIONALITÄT**
+        // **Drag & Drop Funktion aktivieren**
         enableDragAndDrop();
 
     } catch (error) {
