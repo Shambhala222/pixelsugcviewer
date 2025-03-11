@@ -13,7 +13,7 @@ body {
 }
 
 /* Styling für den Container, in dem das UGC angezeigt wird */
-#ugc-container {
+#ugc-container::before {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -28,7 +28,7 @@ body {
 }
 
 /* Falls du später ein Bild als Hintergrund für den UGC-Container möchtest */
-#ugc-container::before {
+#ugc-container {
     content: "";
     position: absolute;
     top: 0;
@@ -39,7 +39,7 @@ body {
     background-size: cover;
     background-position: center;
     border-radius: 10px;
-    opacity: 0.9; /* Falls der Hintergrund leicht transparent sein soll */
+    opacity: 0; /* Falls der Hintergrund leicht transparent sein soll */
 }
 
 /* Canvas (Animation) zentrieren */
