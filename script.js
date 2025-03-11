@@ -7,37 +7,60 @@ document.addEventListener("DOMContentLoaded", async function () {
         return;
     }
 
-    // 🔹 Die korrekten UGC-Schlüssel bilden (mit richtigem Minus!)
+    console.log("🔍 Gesuchte UGC-ID:", ugcId);
+
+    // Hier bleibt das "-" erhalten!
     const itmKey = `itm_ugc-${ugcId}`;
-    const objKey = `obj_ugc-${ugcId}`;
+    console.log("🔎 Suche nach itm_ugc:", itmKey);
 
     try {
-        // 🔹 JSON-Daten von GitHub abrufen
         const response = await fetch("https://raw.githubusercontent.com/Shambhala222/pixelsugcviewer/main/ugc.json");
         const ugcData = await response.json();
 
-        // 🔹 1️⃣ Prüfe, ob `itm_ugc-` vorhanden ist
         const itmEntry = ugcData[itmKey];
+
         if (!itmEntry || !itmEntry.onUse || !itmEntry.onUse.placeObject) {
+            console.error("❌ itm_ugc nicht gefunden oder keine placeObject-Verknüpfung.");
             document.getElementById("ugc-container").innerHTML = "<p>Kein animiertes UGC gefunden.</p>";
             return;
         }
 
-        // 🔹 2️⃣ `obj_ugc-` suchen (für die Animation)
+        // Hier bleibt das "-" erhalten!
+        const objKey = `obj_ugc-${ugcId}`;
+        console.log("🔎 Suche nach obj_ugc:", objKey);
+
         const objEntry = ugcData[objKey];
-        if (!objEntry || !objEntry.sprite || !objEntry.sprite.isSpritesheet) {
+
+        if (!objEntry) {
+            console.error("❌ obj_ugc nicht gefunden:", objKey);
+            document.getElementById("ugc-container").innerHTML = "<p>Dieses UGC hat keine Animation.</p>";
+            return;
+        }
+
+        if (!objEntry.sprite || !objEntry.sprite.isSpritesheet) {
+            console.error("❌ Kein Sprite-Sheet vorhanden.");
             document.getElementById("ugc-container").innerHTML = "<p>Dieses UGC ist nicht animiert.</p>";
             return;
         }
 
-        // 🔹 3️⃣ Die Sprite-Animation-Parameter auslesen
-        let spriteUrl = objEntry.sprite.image.startsWith("//") ? "https:" + objEntry.sprite.image : objEntry.sprite.image;
+        // Sprite-Informationen extrahieren
+        let spriteUrl = objEntry.sprite.image;
+        if (spriteUrl.startsWith("//")) {
+            spriteUrl = "https:" + spriteUrl;  
+        }
+
         const frameCount = objEntry.sprite.frames;
         const frameRate = objEntry.sprite.frameRate;
-        const frameWidth = objEntry.sprite.size.width;  // Breite eines einzelnen Frames
-        const frameHeight = objEntry.sprite.size.height; // Höhe eines einzelnen Frames
+        const frameWidth = objEntry.sprite.size.width;
+        const frameHeight = objEntry.sprite.size.height;
 
-        // 🔹 4️⃣ `<canvas>` für die Animation erzeugen
+        console.log("✅ Animation gefunden!");
+        console.log("🎨 Sprite-URL:", spriteUrl);
+        console.log("🖼 Frame-Größe:", frameWidth, "x", frameHeight);
+        console.log("🎞 Frames:", frameCount);
+        console.log("⏳ Framerate:", frameRate, "FPS");
+
+        // Canvas-Element erstellen
         const canvas = document.createElement("canvas");
         canvas.width = frameWidth;
         canvas.height = frameHeight;
@@ -51,12 +74,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         function animateSprite() {
             ctx.clearRect(0, 0, frameWidth, frameHeight);
-            ctx.drawImage(
-                spriteImage,
-                currentFrame * frameWidth, 0, // 🟢 Schneidet den aktuellen Frame aus
-                frameWidth, frameHeight,     // Größe des Ausschnitts (Frame)
-                0, 0, frameWidth, frameHeight // 🟢 Zeichnet den Frame auf das Canvas
-            );
+            ctx.drawImage(spriteImage, currentFrame * frameWidth, 0, frameWidth, frameHeight, 0, 0, frameWidth, frameHeight);
             currentFrame = (currentFrame + 1) % frameCount;
         }
 
@@ -65,7 +83,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         };
 
     } catch (error) {
-        console.error("Fehler beim Laden der UGC JSON:", error);
+        console.error("❌ Fehler beim Laden der UGC JSON:", error);
         document.getElementById("ugc-container").innerHTML = "<p>Fehler beim Laden der Daten.</p>";
     }
 });
