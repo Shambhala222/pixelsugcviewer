@@ -99,18 +99,14 @@ document.addEventListener("DOMContentLoaded", async function () {
                 let totalRows = Math.ceil(frameCount / framesPerRow);
 
                 // **Fix: Falls das Bild nur eine Zeile hat, setzen wir totalRows = 1**
-                if (totalImageHeight === frameHeight) {
+                if (totalImageHeight === frameHeight || totalRows === 1) {
                     totalRows = 1;
                 }
 
+                // **Korrektur: Frames per Row manuell berechnen, falls der Wert falsch ist**
                 const calculatedFrames = framesPerRow * totalRows;
-
-                console.log(`🧩 Frames pro Zeile: ${framesPerRow}, Gesamtzeilen: ${totalRows}`);
-                console.log(`🔍 Berechnete Frames: ${calculatedFrames} (tatsächlich im Bild)`);
-
-                // **Fehlerhafte Frames aus JSON korrigieren**
                 if (calculatedFrames < frameCount) {
-                    console.warn(`⚠️ Fehlerhafte Frames gefunden! JSON sagt ${frameCount}, aber Bild hat nur ${calculatedFrames}.`);
+                    console.warn(`⚠️ Fehlerhafte Frames erkannt! JSON sagt ${frameCount}, Bild hat aber nur ${calculatedFrames}.`);
                     frameCount = calculatedFrames;
                 }
 
@@ -123,14 +119,11 @@ document.addEventListener("DOMContentLoaded", async function () {
                     if (delta >= 1000 / frameRate) {
                         ctx.clearRect(0, 0, frameWidth, frameHeight);
 
-                        // Berechnung von Zeile & Spalte
-                        const row = Math.floor(currentFrame / framesPerRow);
+                        // **Fix: Frames wirklich nur in einer Zeile berechnen**
                         const col = currentFrame % framesPerRow;
-
                         const sx = col * frameWidth;
-                        const sy = row * frameHeight;
 
-                        ctx.drawImage(spriteImage, sx, sy, frameWidth, frameHeight, 0, 0, frameWidth, frameHeight);
+                        ctx.drawImage(spriteImage, sx, 0, frameWidth, frameHeight, 0, 0, frameWidth, frameHeight);
                         currentFrame = (currentFrame + 1) % frameCount;
                         lastFrameTime = timestamp;
                     }
