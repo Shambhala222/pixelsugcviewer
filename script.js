@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         document.getElementById("ugc-container").innerHTML = "";
 
         // **Skalierungsfaktor setzen**
-        let scaleFactor = 1.3; // 🔥 Ändere diesen Wert, um das Bild zu vergrößern/verkleinern
+        let scaleFactor = 1.1; // 🔥 Ändere diesen Wert, um das Bild zu vergrößern/verkleinern
 
         if (isSpritesheet) {
             console.log("✅ Animation erkannt!");
