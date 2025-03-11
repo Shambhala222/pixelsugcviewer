@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         // JSON laden
         const response = await fetch("https://raw.githubusercontent.com/Shambhala222/pixelsugcviewer/main/ugc.json");
         const ugcData = await response.json();
-
+        
         console.log("✅ JSON geladen, Hauptkategorien:", Object.keys(ugcData));
 
         if (!ugcData.items || !ugcData.objects) {
@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (isSpritesheet) {
             console.log("✅ Animation erkannt!");
 
-            let frameCount = objEntry?.sprite?.frames || 1;
+            let frameCount = objEntry?.sprite?.frames || 1; 
             const frameRate = objEntry?.sprite?.frameRate || 1;
             const frameWidth = objEntry?.sprite?.size?.width;
             const frameHeight = objEntry?.sprite?.size?.height;
@@ -93,14 +93,48 @@ document.addEventListener("DOMContentLoaded", async function () {
             spriteImage.src = imageUrl;
 
             spriteImage.onload = function () {
-                let currentFrame = 0;
-                function animateSprite() {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    ctx.drawImage(spriteImage, currentFrame * frameWidth, 0, frameWidth, frameHeight,
-                        0, 0, canvas.width, canvas.height);
-                    currentFrame = (currentFrame + 1) % frameCount;
+                const totalImageWidth = spriteImage.width;
+                const totalImageHeight = spriteImage.height;
+
+                console.log(`📏 Gesamte Bildgröße: ${totalImageWidth} x ${totalImageHeight}`);
+
+                const framesPerRow = Math.floor(totalImageWidth / frameWidth);
+                let totalRows = Math.ceil(frameCount / framesPerRow);
+
+                // **Fix: Falls das Bild nur eine Zeile hat, setzen wir totalRows = 1**
+                if (totalImageHeight === frameHeight || totalRows === 1) {
+                    totalRows = 1;
                 }
-                setInterval(animateSprite, 1000 / frameRate);
+
+                // **Korrektur: Frames per Row manuell berechnen, falls der Wert falsch ist**
+                const calculatedFrames = framesPerRow * totalRows;
+                if (calculatedFrames < frameCount) {
+                    console.warn(`⚠️ Fehlerhafte Frames erkannt! JSON sagt ${frameCount}, Bild hat aber nur ${calculatedFrames}.`);
+                    frameCount = calculatedFrames;
+                }
+
+                let currentFrame = 0;
+                let lastFrameTime = performance.now();
+
+                function animateSprite(timestamp) {
+                    const delta = timestamp - lastFrameTime;
+
+                    if (delta >= 1000 / frameRate) {
+                        ctx.clearRect(0, 0, frameWidth, frameHeight);
+
+                        // **Fix: Frames wirklich nur in einer Zeile berechnen**
+                        const col = currentFrame % framesPerRow;
+                        const sx = col * frameWidth;
+
+                        ctx.drawImage(spriteImage, sx, 0, frameWidth, frameHeight, 0, 0, frameWidth, frameHeight);
+                        currentFrame = (currentFrame + 1) % frameCount;
+                        lastFrameTime = timestamp;
+                    }
+
+                    requestAnimationFrame(animateSprite);
+                }
+
+                requestAnimationFrame(animateSprite);
             };
 
         } else {
@@ -117,7 +151,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             document.getElementById("ugc-container").appendChild(imgElement);
         }
 
-        // **Drag & Drop Funktion aktivieren**
+        // **DRAG & DROP FUNKTIONALITÄT**
         enableDragAndDrop();
 
     } catch (error) {
