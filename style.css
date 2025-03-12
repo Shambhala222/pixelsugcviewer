@@ -25,6 +25,9 @@ html, body {
     margin: auto;
     position: absolute;
     box-shadow: none;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 /* Canvas (Animation) */
