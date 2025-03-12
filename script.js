@@ -122,6 +122,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                 
                 const framesPerRow = Math.floor(totalImageWidth / (frameWidth / scaleFactor));
                 const totalRows = Math.floor(totalImageHeight / (frameHeight / scaleFactor));
+                const calculatedFrameCount = framesPerRow * totalRows;
+                console.log(`📊 Berechnete Frames: ${calculatedFrameCount} (JSON sagt: ${frameCount})`);
                 
                 let currentFrame = 0;
                 let lastFrameTime = performance.now();
