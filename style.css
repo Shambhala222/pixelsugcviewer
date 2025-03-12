@@ -9,7 +9,7 @@ body {
     align-items: center;
     justify-content: center;
     height: 100vh;
-    background-image: url("landbackground.png"); /* HINTERGRUNDBILD LADEN */
+    background-image: url("landbackgroundoutside.png"); /* HINTERGRUNDBILD LADEN */
     background-size: cover; /* Bild skaliert auf Bildschirmgröße */
     background-position: center; /* Bild bleibt zentriert */
     background-repeat: no-repeat; /* Kein Wiederholen des Bildes */
