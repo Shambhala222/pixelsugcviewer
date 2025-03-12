@@ -1,19 +1,15 @@
 /* Basis-Styling für die gesamte Seite */
-body {
-    font-family: Arial, sans-serif;
-    text-align: center;
+html, body {
+    height: 100%;
+    width: 100%;
     margin: 0;
     padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    background-image: url("landbackgroundoutside.png"); /* HINTERGRUNDBILD LADEN */
-    background-size: cover; /* Bild skaliert auf Bildschirmgröße */
-    background-position: center; /* Bild bleibt zentriert */
-    background-repeat: no-repeat; /* Kein Wiederholen des Bildes */
-    background-attachment: fixed; /* Hintergrund bleibt fixiert */
+    overflow: hidden; /* Kein Scrollbalken, aber Scroll-Ereignisse werden erfasst */
+    background-image: url("landbackgroundoutside.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
 /* Styling für den Container, in dem das UGC angezeigt wird */
