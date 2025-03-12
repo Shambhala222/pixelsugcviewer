@@ -183,6 +183,33 @@ document.addEventListener("DOMContentLoaded", function () {
             touchStartY = e.touches[0].clientY;
         }
     });
+
+    // **🔻 HIER EINSETZEN 🔻 (PC: Hintergrund mit Maus ziehen)**
+    let isDraggingBackground = false;
+    let startX, startY;
+
+    document.addEventListener("mousedown", (e) => {
+        if (!e.target.closest("#ugc-container")) {
+            isDraggingBackground = true;
+            startX = e.clientX;
+            startY = e.clientY;
+        }
+    });
+
+    document.addEventListener("mousemove", (e) => {
+        if (isDraggingBackground) {
+            let deltaX = (startX - e.clientX) * 0.1;
+            let deltaY = (startY - e.clientY) * 0.1;
+            updateBackgroundPosition(deltaX, deltaY);
+
+            startX = e.clientX;
+            startY = e.clientY;
+        }
+    });
+
+    document.addEventListener("mouseup", () => {
+        isDraggingBackground = false;
+    });
 });
 
 // 📌 2️⃣ Drag & Drop für UGC-Container (PC + Mobile)
