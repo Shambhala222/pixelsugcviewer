@@ -173,7 +173,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-// Neuer Drag & Drop Code mit korrekter Mausposition
+// Neuer Drag & Drop Code mit korrekter Mausposition inkl. Mobile
 document.addEventListener("DOMContentLoaded", function () {
     let container = document.getElementById("ugc-container");
     let isDragging = false;
@@ -182,18 +182,18 @@ document.addEventListener("DOMContentLoaded", function () {
     container.addEventListener("mousedown", (e) => {
         isDragging = true;
 
-        // Berechne den Abstand zwischen Klickposition und Container-Startpunkt
+        // Berechne den Offset OHNE Sprung-Effekt
         let rect = container.getBoundingClientRect();
         offsetX = e.clientX - rect.left;
         offsetY = e.clientY - rect.top;
 
+        container.style.position = "absolute"; // Falls es nicht schon gesetzt ist
         container.style.cursor = "grabbing";
     });
 
     document.addEventListener("mousemove", (e) => {
         if (!isDragging) return;
 
-        // Setzt die neue Position des Containers basierend auf Mausbewegung
         let newX = e.clientX - offsetX;
         let newY = e.clientY - offsetY;
 
@@ -206,7 +206,7 @@ document.addEventListener("DOMContentLoaded", function () {
         container.style.cursor = "grab";
     });
 
-    // Optional: Touch-Support für mobile Geräte
+    // **Touch-Support für Mobile Geräte**
     container.addEventListener("touchstart", (e) => {
         isDragging = true;
 
