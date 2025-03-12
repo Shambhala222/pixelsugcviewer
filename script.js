@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         function getScaleFactor() {
             if (window.innerWidth <= 768) { 
-                return 1.333 * 1.5; // Mobile etwas größer machen
+                return 1.333 * 1; // Mobile etwas größer machen
             } else {
                 return 1.333; // Standard für PC
             }
