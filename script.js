@@ -137,7 +137,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 });
 
-// Backgroudbild Scroll&Swipe
+// 📌 1️⃣ Hintergrundbild Scrollen & Wischen (PC + Mobile)
 document.addEventListener("DOMContentLoaded", function () {
     let bgPosX = 50; // Startposition X (Mitte)
     let bgPosY = 50; // Startposition Y (Mitte)
@@ -148,55 +148,54 @@ document.addEventListener("DOMContentLoaded", function () {
         document.body.style.backgroundPosition = `${bgPosX}% ${bgPosY}%`;
     }
 
-    // Mausrad bewegt den Hintergrund
+    // **🖱 Mausrad bewegt den Hintergrund**
     document.addEventListener("wheel", (e) => {
-        let deltaX = e.deltaX * 0.2; // Horizontales Scrollen (Touchpads oder Shift+Mausrad)
-        let deltaY = e.deltaY * 0.2; // Vertikales Scrollen
+        let deltaX = e.deltaX * 0.2; 
+        let deltaY = e.deltaY * 0.2; 
         updateBackgroundPosition(-deltaX, -deltaY);
     });
 
-    // Touch-Swipe für Mobile Geräte
+    // **📱 Touch-Swipe für Mobile (Nur wenn NICHT auf dem UGC-Container)**
     let touchStartX, touchStartY;
 
     document.addEventListener("touchstart", (e) => {
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
+        if (e.touches.length === 1 && !e.target.closest("#ugc-container")) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }
     });
 
     document.addEventListener("touchmove", (e) => {
-        let deltaX = (touchStartX - e.touches[0].clientX) * 0.1;
-        let deltaY = (touchStartY - e.touches[0].clientY) * 0.1;
-        updateBackgroundPosition(deltaX, deltaY);
+        if (e.touches.length === 1 && !e.target.closest("#ugc-container")) {
+            let deltaX = (touchStartX - e.touches[0].clientX) * 0.1;
+            let deltaY = (touchStartY - e.touches[0].clientY) * 0.1;
+            updateBackgroundPosition(deltaX, deltaY);
 
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }
     });
 });
 
-// Neuer Drag & Drop Code mit korrekter Mausposition inkl. Mobile
+// 📌 2️⃣ Drag & Drop für UGC-Container (PC + Mobile)
 document.addEventListener("DOMContentLoaded", function () {
     let container = document.getElementById("ugc-container");
     let isDragging = false;
     let offsetX = 0, offsetY = 0;
 
+    // **🖱 Maus Drag & Drop für Desktop**
     container.addEventListener("mousedown", (e) => {
         isDragging = true;
-
-        // Berechne den Offset OHNE Sprung-Effekt
         let rect = container.getBoundingClientRect();
         offsetX = e.clientX - rect.left;
         offsetY = e.clientY - rect.top;
-
-        container.style.position = "absolute"; // Falls es nicht schon gesetzt ist
         container.style.cursor = "grabbing";
     });
 
     document.addEventListener("mousemove", (e) => {
         if (!isDragging) return;
-
         let newX = e.clientX - offsetX;
         let newY = e.clientY - offsetY;
-
         container.style.left = `${newX}px`;
         container.style.top = `${newY}px`;
     });
@@ -206,25 +205,26 @@ document.addEventListener("DOMContentLoaded", function () {
         container.style.cursor = "grab";
     });
 
-    // **Touch-Support für Mobile Geräte**
+    // **📱 Mobile Drag & Drop für den Container**
     container.addEventListener("touchstart", (e) => {
-        isDragging = true;
+        if (e.touches.length === 1) {
+            e.preventDefault(); // Blockiert normales Scrollen auf dem UGC
+            isDragging = true;
 
-        let touch = e.touches[0];
-        let rect = container.getBoundingClientRect();
-        offsetX = touch.clientX - rect.left;
-        offsetY = touch.clientY - rect.top;
+            let touch = e.touches[0];
+            let rect = container.getBoundingClientRect();
+            offsetX = touch.clientX - rect.left;
+            offsetY = touch.clientY - rect.top;
 
-        container.style.cursor = "grabbing";
-    });
+            container.style.cursor = "grabbing";
+        }
+    }, { passive: false });
 
     document.addEventListener("touchmove", (e) => {
-        if (!isDragging) return;
-
+        if (!isDragging || e.touches.length !== 1) return;
         let touch = e.touches[0];
         let newX = touch.clientX - offsetX;
         let newY = touch.clientY - offsetY;
-
         container.style.left = `${newX}px`;
         container.style.top = `${newY}px`;
     });
