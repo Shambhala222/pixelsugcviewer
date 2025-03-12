@@ -63,6 +63,16 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         console.log(`🎨 Image-URL: ${imageUrl}`);
 
+        function getScaleFactor() {
+            if (window.innerWidth <= 768) { 
+                return 1.333 * 1.5; // Mobile etwas größer machen
+            } else {
+                return 1.333; // Standard für PC
+            }
+        }
+
+        const scaleFactor = getScaleFactor(); // Dynamische Skalierung je nach Gerät
+        
         // **Container leeren**
         const container = document.getElementById("ugc-container");
         container.innerHTML = "";
