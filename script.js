@@ -77,8 +77,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         const container = document.getElementById("ugc-container");
         container.innerHTML = "";
 
-        const scaleFactor = 1.333; // Standard-Skalierung, kann angepasst werden
-
         if (isSpritesheet) {
             console.log("✅ Animation erkannt!");
             
