@@ -124,6 +124,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 const totalRows = Math.floor(totalImageHeight / (frameHeight / scaleFactor));
                 const calculatedFrameCount = framesPerRow * totalRows;
                 console.log(`📊 Berechnete Frames: ${calculatedFrameCount} (JSON sagt: ${frameCount})`);
+                console.log(`📌 Spalten erkannt: ${framesPerRow}, Reihen erkannt: ${totalRows}`);
                 
                 let currentFrame = 0;
                 let lastFrameTime = performance.now();
@@ -137,7 +138,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                         const sx = col * (frameWidth / scaleFactor);
                         const sy = row * (frameHeight / scaleFactor);
                         ctx.drawImage(spriteImage, sx, sy, frameWidth / scaleFactor, frameHeight / scaleFactor, 0, 0, frameWidth, frameHeight);
-                        currentFrame = (currentFrame + 1) % frameCount;
+                        currentFrame = (currentFrame + 1) % calculatedFrameCount;
                         lastFrameTime = timestamp;
                     }
                     requestAnimationFrame(animateSprite);
