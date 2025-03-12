@@ -162,61 +162,38 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 });
 
-// Backgroudbild Drag&Move
+// Backgroudbild Scroll&Swipe
 document.addEventListener("DOMContentLoaded", function () {
-    let isDragging = false;
-    let startX, startY;
     let bgPosX = 50; // Startposition X (Mitte)
     let bgPosY = 50; // Startposition Y (Mitte)
 
-    document.addEventListener("mousedown", (e) => {
-        isDragging = true;
-        startX = e.clientX;
-        startY = e.clientY;
-    });
-
-    document.addEventListener("mousemove", (e) => {
-        if (!isDragging) return;
-
-        let deltaX = (e.clientX - startX) * 0.1; // Bewegung dämpfen
-        let deltaY = (e.clientY - startY) * 0.1;
-        
+    function updateBackgroundPosition(deltaX, deltaY) {
         bgPosX = Math.max(0, Math.min(100, bgPosX + deltaX));
         bgPosY = Math.max(0, Math.min(100, bgPosY + deltaY));
-
         document.body.style.backgroundPosition = `${bgPosX}% ${bgPosY}%`;
+    }
 
-        startX = e.clientX;
-        startY = e.clientY;
+    // Mausrad bewegt den Hintergrund
+    document.addEventListener("wheel", (e) => {
+        let deltaX = e.deltaX * 0.2; // Horizontales Scrollen (Touchpads oder Shift+Mausrad)
+        let deltaY = e.deltaY * 0.2; // Vertikales Scrollen
+        updateBackgroundPosition(-deltaX, -deltaY);
     });
 
-    document.addEventListener("mouseup", () => {
-        isDragging = false;
-    });
+    // Touch-Swipe für Mobile Geräte
+    let touchStartX, touchStartY;
 
-    // Touch-Support für Mobile
     document.addEventListener("touchstart", (e) => {
-        isDragging = true;
-        startX = e.touches[0].clientX;
-        startY = e.touches[0].clientY;
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
     });
 
     document.addEventListener("touchmove", (e) => {
-        if (!isDragging) return;
+        let deltaX = (touchStartX - e.touches[0].clientX) * 0.1;
+        let deltaY = (touchStartY - e.touches[0].clientY) * 0.1;
+        updateBackgroundPosition(deltaX, deltaY);
 
-        let deltaX = (e.touches[0].clientX - startX) * 0.1;
-        let deltaY = (e.touches[0].clientY - startY) * 0.1;
-        
-        bgPosX = Math.max(0, Math.min(100, bgPosX + deltaX));
-        bgPosY = Math.max(0, Math.min(100, bgPosY + deltaY));
-
-        document.body.style.backgroundPosition = `${bgPosX}% ${bgPosY}%`;
-
-        startX = e.touches[0].clientX;
-        startY = e.touches[0].clientY;
-    });
-
-    document.addEventListener("touchend", () => {
-        isDragging = false;
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
     });
 });
