@@ -161,3 +161,62 @@ document.addEventListener("DOMContentLoaded", async function () {
         document.getElementById("ugc-container").innerHTML = "<p>Fehler beim Laden der Daten.</p>";
     }
 });
+
+// Backgroudbild Drag&Move
+document.addEventListener("DOMContentLoaded", function () {
+    let isDragging = false;
+    let startX, startY;
+    let bgPosX = 50; // Startposition X (Mitte)
+    let bgPosY = 50; // Startposition Y (Mitte)
+
+    document.addEventListener("mousedown", (e) => {
+        isDragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+    });
+
+    document.addEventListener("mousemove", (e) => {
+        if (!isDragging) return;
+
+        let deltaX = (e.clientX - startX) * 0.1; // Bewegung dämpfen
+        let deltaY = (e.clientY - startY) * 0.1;
+        
+        bgPosX = Math.max(0, Math.min(100, bgPosX + deltaX));
+        bgPosY = Math.max(0, Math.min(100, bgPosY + deltaY));
+
+        document.body.style.backgroundPosition = `${bgPosX}% ${bgPosY}%`;
+
+        startX = e.clientX;
+        startY = e.clientY;
+    });
+
+    document.addEventListener("mouseup", () => {
+        isDragging = false;
+    });
+
+    // Touch-Support für Mobile
+    document.addEventListener("touchstart", (e) => {
+        isDragging = true;
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+    });
+
+    document.addEventListener("touchmove", (e) => {
+        if (!isDragging) return;
+
+        let deltaX = (e.touches[0].clientX - startX) * 0.1;
+        let deltaY = (e.touches[0].clientY - startY) * 0.1;
+        
+        bgPosX = Math.max(0, Math.min(100, bgPosX + deltaX));
+        bgPosY = Math.max(0, Math.min(100, bgPosY + deltaY));
+
+        document.body.style.backgroundPosition = `${bgPosX}% ${bgPosY}%`;
+
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+    });
+
+    document.addEventListener("touchend", () => {
+        isDragging = false;
+    });
+});
