@@ -67,31 +67,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         const container = document.getElementById("ugc-container");
         container.innerHTML = "";
 
-        // **Drag & Drop-Funktionalität hinzufügen**
-        container.style.position = "absolute";
-        container.style.cursor = "grab";
-
-        let offsetX, offsetY, isDragging = false;
-
-        container.addEventListener("mousedown", (e) => {
-            isDragging = true;
-            offsetX = e.clientX - container.getBoundingClientRect().left;
-            offsetY = e.clientY - container.getBoundingClientRect().top;
-            container.style.cursor = "grabbing";
-        });
-
-        document.addEventListener("mousemove", (e) => {
-            if (isDragging) {
-                container.style.left = `${e.clientX - offsetX}px`;
-                container.style.top = `${e.clientY - offsetY}px`;
-            }
-        });
-
-        document.addEventListener("mouseup", () => {
-            isDragging = false;
-            container.style.cursor = "grab";
-        });
-
         const scaleFactor = 1.333; // Standard-Skalierung, kann angepasst werden
 
         if (isSpritesheet) {
@@ -195,5 +170,67 @@ document.addEventListener("DOMContentLoaded", function () {
 
         touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
+    });
+});
+
+// Neuer Drag & Drop Code mit korrekter Mausposition
+document.addEventListener("DOMContentLoaded", function () {
+    let container = document.getElementById("ugc-container");
+    let isDragging = false;
+    let offsetX = 0, offsetY = 0;
+
+    container.addEventListener("mousedown", (e) => {
+        isDragging = true;
+
+        // Berechne den Abstand zwischen Klickposition und Container-Startpunkt
+        let rect = container.getBoundingClientRect();
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+
+        container.style.cursor = "grabbing";
+    });
+
+    document.addEventListener("mousemove", (e) => {
+        if (!isDragging) return;
+
+        // Setzt die neue Position des Containers basierend auf Mausbewegung
+        let newX = e.clientX - offsetX;
+        let newY = e.clientY - offsetY;
+
+        container.style.left = `${newX}px`;
+        container.style.top = `${newY}px`;
+    });
+
+    document.addEventListener("mouseup", () => {
+        isDragging = false;
+        container.style.cursor = "grab";
+    });
+
+    // Optional: Touch-Support für mobile Geräte
+    container.addEventListener("touchstart", (e) => {
+        isDragging = true;
+
+        let touch = e.touches[0];
+        let rect = container.getBoundingClientRect();
+        offsetX = touch.clientX - rect.left;
+        offsetY = touch.clientY - rect.top;
+
+        container.style.cursor = "grabbing";
+    });
+
+    document.addEventListener("touchmove", (e) => {
+        if (!isDragging) return;
+
+        let touch = e.touches[0];
+        let newX = touch.clientX - offsetX;
+        let newY = touch.clientY - offsetY;
+
+        container.style.left = `${newX}px`;
+        container.style.top = `${newY}px`;
+    });
+
+    document.addEventListener("touchend", () => {
+        isDragging = false;
+        container.style.cursor = "grab";
     });
 });
