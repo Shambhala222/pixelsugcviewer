@@ -152,6 +152,10 @@ if (imageUrl.startsWith("https://mesh-online-assets.s3.us-east-2.amazonaws.com")
             imgElement.style.margin = "0 auto";
             imgElement.style.border = "1px solid black";
             container.appendChild(imgElement);
+            // Fix für statische Bilder (Verhindert das falsche Dragging)
+            imgElement.setAttribute("draggable", "false"); 
+            imgElement.addEventListener("mousedown", (e) => e.preventDefault());
+            container.appendChild(imgElement);
         }
     } catch (error) {
         console.error("❌ Fehler beim Laden der UGC JSON:", error);
