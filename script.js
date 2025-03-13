@@ -125,13 +125,15 @@ if (imageUrl.startsWith("https://mesh-online-assets.s3.us-east-2.amazonaws.com")
             spriteImage.onload = function () {
                 const totalImageWidth = spriteImage.width;
                 const totalImageHeight = spriteImage.height;
-                console.log(`📏 Gesamte Bildgröße: ${totalImageWidth} x ${totalImageHeight}`);
+                console.log(`📏 Total Image Size: ${totalImageWidth} x ${totalImageHeight}`);
 
                 const framesPerRow = Math.max(1, Math.floor(totalImageWidth / (frameWidth / scaleFactor)));
                 const totalRows = Math.max(1, Math.floor(totalImageHeight / (frameHeight / scaleFactor)));
+                console.log(`📢 Scale factor applied: ${scaleFactor}`);
+                console.log(`✅ Scaled frame width: ${frameWidth}px, Scaled frame height: ${frameHeight}px`);
                 const calculatedFrameCount = framesPerRow * totalRows;
-                console.log(`📊 Berechnete Frames: ${calculatedFrameCount} (JSON sagt: ${frameCount})`);
-                console.log(`📌 Spalten erkannt: ${framesPerRow}, Reihen erkannt: ${totalRows}`);
+                console.log(`📊 Calculating Frames: ${calculatedFrameCount} (JSON states: ${frameCount})`);
+                console.log(`📌 Frames detected: ${framesPerRow}, Rows detected: ${totalRows}`);
                 
                 let currentFrame = 0;
                 let lastFrameTime = performance.now();
