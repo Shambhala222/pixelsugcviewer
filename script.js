@@ -77,6 +77,7 @@ if (imageUrl.startsWith("https://mesh-online-assets.s3.us-east-2.amazonaws.com")
 
         console.log(`🎨 Image-URL: ${imageUrl}`);
 
+        //Scale Factor für Animierte UGCs
         function getScaleFactor() {
             if (window.innerWidth <= 768) { 
                 return 1.333 * 1.1; // Mobile etwas größer machen
@@ -85,7 +86,16 @@ if (imageUrl.startsWith("https://mesh-online-assets.s3.us-east-2.amazonaws.com")
             }
         }
 
-        const scaleFactor = getScaleFactor(); // Dynamische Skalierung je nach Gerät
+        const scaleFactor = getScaleFactor(); // Dynamische Skalierung je nach Gerät animierte UGC
+
+        //Scale Factor für Statische UGCs
+        function getStaticScaleFactor() {
+            if (window.innerWidth <= 768) { 
+                return 1.333 * 1.1; // Mobile – Wert kannst du anpassen
+            } else {
+                return 1.333; // Desktop – Wert kannst du anpassen
+            }
+        }
         
         // **Container leeren**
         const container = document.getElementById("ugc-container");
@@ -147,9 +157,10 @@ if (imageUrl.startsWith("https://mesh-online-assets.s3.us-east-2.amazonaws.com")
             const imgElement = document.createElement("img");
             imgElement.src = imageUrl;
 
-            // Scale-Faktor anwendung statische UGCs
-            const imgWidth = objEntry?.sprite?.size?.width * scaleFactor;
-            const imgHeight = objEntry?.sprite?.size?.height * scaleFactor;
+            // 🔥 Hier wird jetzt der **eigene** Scale-Faktor für statische Bilder genutzt!
+            const staticScaleFactor = getStaticScaleFactor();
+            const imgWidth = objEntry?.sprite?.size?.width * staticScaleFactor;
+            const imgHeight = objEntry?.sprite?.size?.height * staticScaleFactor;
 
             imgElement.style.width = `${imgWidth}px`;   // Breite wird skaliert
             imgElement.style.height = `${imgHeight}px`; // Höhe wird skaliert
