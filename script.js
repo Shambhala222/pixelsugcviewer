@@ -146,8 +146,13 @@ if (imageUrl.startsWith("https://mesh-online-assets.s3.us-east-2.amazonaws.com")
             console.log("🖼 Statisches Bild erkannt!");
             const imgElement = document.createElement("img");
             imgElement.src = imageUrl;
-            imgElement.style.width = `${100 * scaleFactor}%`;
-            imgElement.style.height = "auto";
+
+            // Scale-Faktor anwendung statische UGCs
+            const imgWidth = objEntry?.sprite?.size?.width * scaleFactor;
+            const imgHeight = objEntry?.sprite?.size?.height * scaleFactor;
+
+            imgElement.style.width = `${imgWidth}px`;   // Breite wird skaliert
+            imgElement.style.height = `${imgHeight}px`; // Höhe wird skaliert
             imgElement.style.display = "block";
             imgElement.style.margin = "0 auto";
             imgElement.style.border = "1px solid black";
