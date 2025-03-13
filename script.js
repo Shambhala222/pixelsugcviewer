@@ -50,11 +50,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         const isSpritesheet = objEntry?.sprite?.isSpritesheet || false;
         let imageUrl = objEntry?.sprite?.image || "";
-        // URL-Fix für fehlerhafte Image-Links
-        if (imageUrl.startsWith("cdn:/")) {
-            imageUrl = "https://mesh-online-assets.s3.us-east-2.amazonaws.com/" + imageUrl.replace("cdn:/", "");
-        } else if (imageUrl.startsWith("//mesh-online-assets")) {
-            imageUrl = "https:" + imageUrl;
 
         if (!imageUrl) {
             console.error("❌ Keine Bild-URL gefunden.");
