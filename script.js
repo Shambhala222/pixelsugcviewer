@@ -159,26 +159,28 @@ if (imageUrl.startsWith("https://mesh-online-assets.s3.us-east-2.amazonaws.com")
         
             // 🔥 Hier wird jetzt der **eigene** Scale-Faktor für statische Bilder genutzt!
             const staticScaleFactor = getStaticScaleFactor();
-            
-            // 📏 Ursprüngliche Werte aus der JSON extrahieren
-            let originalWidth = objEntry?.sprite?.size?.width || objEntry?.physics?.size?.width || 100;
-            let originalHeight = objEntry?.sprite?.size?.height || objEntry?.physics?.size?.height || 100;
         
-            console.log(`🔍 Ursprüngliche Breite: ${originalWidth}px, Höhe: ${originalHeight}px`);
-            
-            // 📊 Skalierung anwenden
-            let scaledWidth = originalWidth * staticScaleFactor;
-            let scaledHeight = originalHeight * staticScaleFactor;
+            // ⏳ Warten, bis das Bild geladen ist, um die echte Größe zu bekommen
+            imgElement.onload = function () {
+                let originalWidth = imgElement.naturalWidth;
+                let originalHeight = imgElement.naturalHeight;
         
-            console.log(`📢 Scale-Faktor angewendet: ${staticScaleFactor}`);
-            console.log(`✅ Skalierte Breite: ${scaledWidth}px, Skalierte Höhe: ${scaledHeight}px`);
+                console.log(`🔍 Echte Bildgröße geladen: Breite: ${originalWidth}px, Höhe: ${originalHeight}px`);
         
-            // 🎨 Bildgröße setzen
-            imgElement.style.width = `${scaledWidth}px`;
-            imgElement.style.height = `${scaledHeight}px`;
-            imgElement.style.display = "block";
-            imgElement.style.margin = "0 auto";
-            imgElement.style.border = "1px solid black";
+                // 📊 Skalierung anwenden
+                let scaledWidth = originalWidth * staticScaleFactor;
+                let scaledHeight = originalHeight * staticScaleFactor;
+        
+                console.log(`📢 Scale-Faktor angewendet: ${staticScaleFactor}`);
+                console.log(`✅ Skalierte Breite: ${scaledWidth}px, Skalierte Höhe: ${scaledHeight}px`);
+        
+                // 🎨 Bildgröße setzen
+                imgElement.style.width = `${scaledWidth}px`;
+                imgElement.style.height = `${scaledHeight}px`;
+                imgElement.style.display = "block";
+                imgElement.style.margin = "0 auto";
+                imgElement.style.border = "1px solid black";
+            };
 
             imgElement.setAttribute("draggable", "false");
             imgElement.addEventListener("mousedown", (e) => e.preventDefault());
