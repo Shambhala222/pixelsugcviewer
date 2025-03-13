@@ -157,24 +157,31 @@ if (imageUrl.startsWith("https://mesh-online-assets.s3.us-east-2.amazonaws.com")
             const imgElement = document.createElement("img");
             imgElement.src = imageUrl;
         
-            // Hier wird jetzt der eigene Scale-Faktor für statische Bilder genutzt
+            // 🔥 Hier wird jetzt der **eigene** Scale-Faktor für statische Bilder genutzt!
             const staticScaleFactor = getStaticScaleFactor();
             
-            // Versuche zuerst `sprite.size`, falls nicht vorhanden, nutze `physics.size`
-            let imgWidth = objEntry?.sprite?.size?.width || objEntry?.physics?.size?.width || 100;
-            let imgHeight = objEntry?.sprite?.size?.height || objEntry?.physics?.size?.height || 100;
+            // 📏 Ursprüngliche Werte aus der JSON extrahieren
+            let originalWidth = objEntry?.sprite?.size?.width || objEntry?.physics?.size?.width || 100;
+            let originalHeight = objEntry?.sprite?.size?.height || objEntry?.physics?.size?.height || 100;
         
-            imgWidth *= staticScaleFactor;
-            imgHeight *= staticScaleFactor;
+            console.log(`🔍 Ursprüngliche Breite: ${originalWidth}px, Höhe: ${originalHeight}px`);
+            
+            // 📊 Skalierung anwenden
+            let scaledWidth = originalWidth * staticScaleFactor;
+            let scaledHeight = originalHeight * staticScaleFactor;
         
-            imgElement.style.width = `${imgWidth}px`;
-            imgElement.style.height = `${imgHeight}px`;
+            console.log(`📢 Scale-Faktor angewendet: ${staticScaleFactor}`);
+            console.log(`✅ Skalierte Breite: ${scaledWidth}px, Skalierte Höhe: ${scaledHeight}px`);
+        
+            // 🎨 Bildgröße setzen
+            imgElement.style.width = `${scaledWidth}px`;
+            imgElement.style.height = `${scaledHeight}px`;
             imgElement.style.display = "block";
             imgElement.style.margin = "0 auto";
             imgElement.style.border = "1px solid black";
 
-            imgElement.setAttribute("draggable", "false"); 
-im          gElement.addEventListener("mousedown", (e) => e.preventDefault());
+            imgElement.setAttribute("draggable", "false");
+            imgElement.addEventListener("mousedown", (e) => e.preventDefault());
             
             container.appendChild(imgElement);
         }
