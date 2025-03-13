@@ -50,6 +50,20 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         const isSpritesheet = objEntry?.sprite?.isSpritesheet || false;
         let imageUrl = objEntry?.sprite?.image || "";
+        // **🔧 URL-Fix für fehlerhafte Image-Links aus der UGC.json**
+        if (imageUrl.startsWith("cdn:/")) {
+            imageUrl = "https://mesh-online-assets.s3.us-east-2.amazonaws.com" + imageUrl.replace("cdn:/", "");
+        } else if (imageUrl.startsWith("//mesh-online-assets")) {
+            imageUrl = "https:" + imageUrl;
+        } else if (imageUrl.startsWith("//uploadedAssets/ugc")) {
+            imageUrl = "https://mesh-online-assets.s3.us-east-2.amazonaws.com" + imageUrl.replace("//uploadedAssets/ugc", "/uploadedAssets/ugc");
+        }
+
+// **🔧 Sicherstellen, dass kein "/" fehlt nach der Domain**
+if (imageUrl.startsWith("https://mesh-online-assets.s3.us-east-2.amazonaws.com") &&
+    !imageUrl.includes("https://mesh-online-assets.s3.us-east-2.amazonaws.com/")) {
+    imageUrl = imageUrl.replace("https://mesh-online-assets.s3.us-east-2.amazonaws.com", "https://mesh-online-assets.s3.us-east-2.amazonaws.com/");
+}
 
         if (!imageUrl) {
             console.error("❌ Keine Bild-URL gefunden.");
