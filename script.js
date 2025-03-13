@@ -156,21 +156,23 @@ if (imageUrl.startsWith("https://mesh-online-assets.s3.us-east-2.amazonaws.com")
             console.log("🖼 Statisches Bild erkannt!");
             const imgElement = document.createElement("img");
             imgElement.src = imageUrl;
-
-            // 🔥 Hier wird jetzt der **eigene** Scale-Faktor für statische Bilder genutzt!
+        
+            // Hier wird jetzt der eigene Scale-Faktor für statische Bilder genutzt
             const staticScaleFactor = getStaticScaleFactor();
-            const imgWidth = objEntry?.sprite?.size?.width * staticScaleFactor;
-            const imgHeight = objEntry?.sprite?.size?.height * staticScaleFactor;
-
-            imgElement.style.width = `${imgWidth}px`;   // Breite wird skaliert
-            imgElement.style.height = `${imgHeight}px`; // Höhe wird skaliert
+            
+            // Versuche zuerst `sprite.size`, falls nicht vorhanden, nutze `physics.size`
+            let imgWidth = objEntry?.sprite?.size?.width || objEntry?.physics?.size?.width || 100;
+            let imgHeight = objEntry?.sprite?.size?.height || objEntry?.physics?.size?.height || 100;
+        
+            imgWidth *= staticScaleFactor;
+            imgHeight *= staticScaleFactor;
+        
+            imgElement.style.width = `${imgWidth}px`;
+            imgElement.style.height = `${imgHeight}px`;
             imgElement.style.display = "block";
             imgElement.style.margin = "0 auto";
             imgElement.style.border = "1px solid black";
-            container.appendChild(imgElement);
-            // Fix für statische Bilder (Verhindert das falsche Dragging)
-            imgElement.setAttribute("draggable", "false"); 
-            imgElement.addEventListener("mousedown", (e) => e.preventDefault());
+            
             container.appendChild(imgElement);
         }
     } catch (error) {
