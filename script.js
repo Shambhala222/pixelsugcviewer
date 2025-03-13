@@ -295,7 +295,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const bgButtons = document.querySelectorAll(".bg-option");
 
     // 🎨 Standard-Background beim Laden setzen
-    const defaultBg = "NFT Land View.jpg"; // 👉 Hier kannst du den Standardwert ändern
+    const defaultBg = "NFT Land View.png"; // 👉 Hier kannst du den Standardwert ändern
     document.body.style.backgroundImage = `url('${defaultBg}')`;
 
     // 🚀 Dropdown öffnen & schließen beim Klick auf den Button
