@@ -116,9 +116,9 @@ if (imageUrl.startsWith("https://mesh-online-assets.s3.us-east-2.amazonaws.com")
                 const totalImageWidth = spriteImage.width;
                 const totalImageHeight = spriteImage.height;
                 console.log(`📏 Gesamte Bildgröße: ${totalImageWidth} x ${totalImageHeight}`);
-                
-                const framesPerRow = Math.floor(totalImageWidth / (frameWidth / scaleFactor));
-                const totalRows = Math.floor(totalImageHeight / (frameHeight / scaleFactor));
+
+                const framesPerRow = Math.max(1, Math.floor(totalImageWidth / (frameWidth / scaleFactor)));
+                const totalRows = Math.max(1, Math.floor(totalImageHeight / (frameHeight / scaleFactor)));
                 const calculatedFrameCount = framesPerRow * totalRows;
                 console.log(`📊 Berechnete Frames: ${calculatedFrameCount} (JSON sagt: ${frameCount})`);
                 console.log(`📌 Spalten erkannt: ${framesPerRow}, Reihen erkannt: ${totalRows}`);
