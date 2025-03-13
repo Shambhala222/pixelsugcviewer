@@ -55,9 +55,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             imageUrl = "https://mesh-online-assets.s3.us-east-2.amazonaws.com" + imageUrl.replace("cdn:/", "");
         } else if (imageUrl.startsWith("//mesh-online-assets")) {
             imageUrl = "https:" + imageUrl;
-        } else if (imageUrl.startsWith("//uploadedAssets/ugc")) {
-            imageUrl = "https://mesh-online-assets.s3.us-east-2.amazonaws.com" + imageUrl.replace("//uploadedAssets/ugc", "/uploadedAssets/ugc");
-        }
 
         if (!imageUrl) {
             console.error("❌ Keine Bild-URL gefunden.");
