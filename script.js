@@ -287,3 +287,29 @@ document.addEventListener("DOMContentLoaded", function () {
         container.style.cursor = "grab";
     });
 });
+
+//Background Change Funktion
+document.addEventListener("DOMContentLoaded", function () {
+    const bgToggleBtn = document.getElementById("bg-toggle-btn");
+    const bgOptions = document.getElementById("bg-options");
+    const bgButtons = document.querySelectorAll(".bg-option");
+
+    // 🎨 Standard-Background beim Laden setzen
+    const defaultBg = "nft-land.jpg"; // 👉 Hier kannst du den Standardwert ändern
+    document.body.style.backgroundImage = `url('${defaultBg}')`;
+
+    // 🚀 Dropdown öffnen & schließen beim Klick auf den Button
+    bgToggleBtn.addEventListener("click", function () {
+        const isOpen = bgOptions.style.display === "flex";
+        bgOptions.style.display = isOpen ? "none" : "flex";
+    });
+
+    // 🔄 Background wechseln & Dropdown automatisch schließen
+    bgButtons.forEach(button => {
+        button.addEventListener("click", function () {
+            const newBg = this.getAttribute("data-bg");
+            document.body.style.backgroundImage = `url('${newBg}')`;
+            bgOptions.style.display = "none"; // Dropdown wieder schließen
+        });
+    });
+});
