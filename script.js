@@ -114,6 +114,7 @@ if (imageUrl.startsWith("https://mesh-online-assets.s3.us-east-2.amazonaws.com")
             console.log(`⏳ Framerate: ${frameRate} FPS`);
             
             const canvas = document.createElement("canvas");
+            canvas.style.border = "none";
             canvas.width = frameWidth;
             canvas.height = frameHeight;
             container.appendChild(canvas);
