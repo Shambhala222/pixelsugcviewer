@@ -81,3 +81,7 @@ img {
 .bg-option:hover {
     background: rgba(255, 255, 255, 0.2);
 }
+
+canvas, img {
+    image-rendering: pixelated;
+}
