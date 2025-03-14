@@ -82,7 +82,7 @@ if (imageUrl.startsWith("https://mesh-online-assets.s3.us-east-2.amazonaws.com")
             if (window.innerWidth <= 768) { 
                 return 1.333 * 1.1; // Mobiler Wert etwas größer machen
             } else {
-                return 1.357; // Desktop Wert
+                return 1.358; // Desktop Wert
             }
         }
 
