@@ -82,7 +82,7 @@ if (imageUrl.startsWith("https://mesh-online-assets.s3.us-east-2.amazonaws.com")
             if (window.innerWidth <= 768) { 
                 return 1.333 * 1.1; // Mobiler Wert etwas größer machen
             } else {
-                return 1.332; // Desktop Wert
+                return 1.336; // Desktop Wert
             }
         }
 
@@ -91,9 +91,9 @@ if (imageUrl.startsWith("https://mesh-online-assets.s3.us-east-2.amazonaws.com")
         //Scale Factor für Statische UGCs
         function getStaticScaleFactor() {
             if (window.innerWidth <= 768) { 
-                return 1.432; // Mobiler Wert 
+                return 1.432; // Mobiler Wert > Perfect
             } else {
-                return 1.332;//1.332; // Desktop Wert 
+                return 1.332;// Desktop Wert > Perfect
             }
         }
         
