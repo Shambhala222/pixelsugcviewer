@@ -181,7 +181,7 @@ if (imageUrl.startsWith("https://mesh-online-assets.s3.us-east-2.amazonaws.com")
                 imgElement.style.height = `${scaledHeight}px`;
                 imgElement.style.display = "block";
                 imgElement.style.margin = "0 auto";
-                imgElement.style.border = "1px solid black";
+                imgElement.style.border = "none";
             };
 
             imgElement.setAttribute("draggable", "false");
