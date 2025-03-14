@@ -80,9 +80,9 @@ if (imageUrl.startsWith("https://mesh-online-assets.s3.us-east-2.amazonaws.com")
         //Scale Factor für Animierte UGCs
         function getScaleFactor() {
             if (window.innerWidth <= 768) { 
-                return 1.333 * 1.1; // Mobiler Wert etwas größer machen
+                return 1.333 * 1.1; // Mobiler Wert > Perfect
             } else {
-                return 1.36; // Desktop Wert Perfect
+                return 1.36; // Desktop Wert > Perfect
             }
         }
 
@@ -93,7 +93,7 @@ if (imageUrl.startsWith("https://mesh-online-assets.s3.us-east-2.amazonaws.com")
             if (window.innerWidth <= 768) { 
                 return 1.432; // Mobiler Wert > Perfect
             } else {
-                return 1.332;// Desktop Wert > Perfect
+                return 1.332; // Desktop Wert > Perfect
             }
         }
         
